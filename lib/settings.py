@@ -8,7 +8,9 @@ class Settings(object):
     def __init__(self):
         super(Settings, self).__init__()
         self.root = fs.abspath(fs.dirname(sys.argv[0]))
-        self.idir = fs.join(self.root,'installers')
+
+        self.idirname = 'installers'
+        self.idir = fs.join(self.root, self.idirname)
         self.ifile = 'install.py'
         self.wdir = fs.join(self.root,'installed')
 

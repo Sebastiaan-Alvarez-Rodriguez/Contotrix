@@ -1,0 +1,8 @@
+<?xml version="1.0">
+<conf>
+    <deps>
+        <d>GNU Make</d>
+        <d type="minimum">libcurl3-dev</d>
+        <d type="minimum">C-99</d>
+    </deps>
+</conf>

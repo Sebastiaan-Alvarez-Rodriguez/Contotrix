@@ -6,11 +6,18 @@ import sys
 def abspath(path):
     return os.path.abspath(path)
 
+# Returns absolute path for a given file
+def abspathfile(file):
+    return os.path.abspath(os.path.dirname(file))
+
 def basename(path):
     return os.path.basename(path)
 
 def cp(path_src, path_dst):
-    shutil.copyfileobj(path_src, path_dst)
+    if isfile(path_src):
+        shutil.copy2(path_src, path_dst)
+    else:
+        shutil.copytree(path_src, path_dst)
 
 def cwd():
     return os.getcwd()
@@ -58,6 +65,9 @@ def rm(directory, *args, ignore_errors=False):
         shutil.rmtree(path, ignore_errors=ignore_errors)
     else:
         os.remove(path)
+
+def sep():
+    return os.sep
 
 # Return size of file in bytes
 def sizeof(path):

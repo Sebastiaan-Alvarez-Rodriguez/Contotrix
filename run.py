@@ -33,6 +33,8 @@ def get_command():
 # allows user to install, execute and reconfigure, dependening on this state
 def main():
     command = get_command()
+    if command == '1':
+        command = 'install haut'
     while command.lower() not in ['q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
