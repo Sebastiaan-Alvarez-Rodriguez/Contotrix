@@ -34,7 +34,7 @@ def remove(name):
         print('No installer name provided')
         return
     if not fs.isdir(fs.join(settings.wdir,name)):
-        print('Success! (no installed tool found)')
+        print('Success! (no such installed tool found)')
         return
     fs.rm(settings.wdir,name)
     print('Success!')

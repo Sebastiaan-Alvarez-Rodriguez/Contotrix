@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/tooska.dir/core/command_line_parser.cpp.o"
+  "CMakeFiles/tooska.dir/core/converter.cpp.o"
+  "CMakeFiles/tooska.dir/core/doc_node_base.cpp.o"
+  "CMakeFiles/tooska.dir/core/nodes_vector.cpp.o"
+  "CMakeFiles/tooska.dir/core/string_helper.cpp.o"
+  "CMakeFiles/tooska.dir/core/string_renderer.cpp.o"
+  "CMakeFiles/tooska.dir/core/token_parser.cpp.o"
+  "CMakeFiles/tooska.dir/core/tree.cpp.o"
+  "CMakeFiles/tooska.dir/core/variant.cpp.o"
+  "CMakeFiles/tooska.dir/html/css_document.cpp.o"
+  "CMakeFiles/tooska.dir/html/css_node.cpp.o"
+  "CMakeFiles/tooska.dir/html/html_document.cpp.o"
+  "CMakeFiles/tooska.dir/html/html_node.cpp.o"
+  "CMakeFiles/tooska.dir/html/html_tag_vector.cpp.o"
+  "CMakeFiles/tooska.dir/html/html_writer.cpp.o"
+  "CMakeFiles/tooska.dir/html/query_parser.cpp.o"
+  "CMakeFiles/tooska.dir/json/json_array.cpp.o"
+  "CMakeFiles/tooska.dir/json/json_document.cpp.o"
+  "CMakeFiles/tooska.dir/json/json_object.cpp.o"
+  "CMakeFiles/tooska.dir/json/json_value.cpp.o"
+  "CMakeFiles/tooska.dir/soap/class_generator.cpp.o"
+  "CMakeFiles/tooska.dir/soap/soap_client.cpp.o"
+  "CMakeFiles/tooska.dir/soap/soap_http_parser.cpp.o"
+  "CMakeFiles/tooska.dir/soap/soap_server.cpp.o"
+  "CMakeFiles/tooska.dir/soap/wsdl.cpp.o"
+  "CMakeFiles/tooska.dir/soap/wsdl_parser.cpp.o"
+  "CMakeFiles/tooska.dir/xml/node_finder.cpp.o"
+  "CMakeFiles/tooska.dir/xml/xml_document.cpp.o"
+  "CMakeFiles/tooska.dir/xml/xml_node.cpp.o"
+  "CMakeFiles/tooska.dir/serialization/json_serializer.cpp.o"
+  "CMakeFiles/tooska.dir/serialization/serializable.cpp.o"
+  "CMakeFiles/tooska.dir/serialization/serializer_base.cpp.o"
+  "CMakeFiles/tooska.dir/serialization/soap_serializer.cpp.o"
+  "CMakeFiles/tooska.dir/serialization/xml_serializer.cpp.o"
+  "libtooska.pdb"
+  "libtooska.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/tooska.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

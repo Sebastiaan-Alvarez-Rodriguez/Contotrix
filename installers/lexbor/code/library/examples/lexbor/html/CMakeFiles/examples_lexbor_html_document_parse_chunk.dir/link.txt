@@ -1,0 +1,1 @@
+/usr/bin/cc  -O2 -Wall -pedantic -pipe -std=c99 -fPIC  -rdynamic CMakeFiles/examples_lexbor_html_document_parse_chunk.dir/document_parse_chunk.c.o  -o document_parse_chunk -Wl,-rpath,/home/radon/Uni/mir/final/wip/lexbor ../../../liblexbor.so.1.0.0 -lm 

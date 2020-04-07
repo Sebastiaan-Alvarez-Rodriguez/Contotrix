@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/tooska_wsdl_parser.dir/main.cpp.o  -o tooska_wsdl_parser -Wl,-rpath,/home/radon/Uni/mir/final/final/installers/tooska/code/src ../../src/libtooska.so -lpthread 

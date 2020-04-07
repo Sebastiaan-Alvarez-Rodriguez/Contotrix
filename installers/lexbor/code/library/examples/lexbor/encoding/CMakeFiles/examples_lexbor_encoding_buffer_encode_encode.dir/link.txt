@@ -1,0 +1,1 @@
+/usr/bin/cc  -O2 -Wall -pedantic -pipe -std=c99 -fPIC  -rdynamic CMakeFiles/examples_lexbor_encoding_buffer_encode_encode.dir/buffer/encode/encode.c.o  -o buffer/encode/encode -Wl,-rpath,/home/radon/Uni/mir/final/wip/lexbor ../../../liblexbor.so.1.0.0 -lm 

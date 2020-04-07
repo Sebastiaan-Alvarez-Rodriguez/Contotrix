@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblexbor-utils_static.a  CMakeFiles/lexbor-utils_static.dir/source/lexbor/utils/http.c.o CMakeFiles/lexbor-utils_static.dir/source/lexbor/utils/warc.c.o
+/usr/bin/ranlib liblexbor-utils_static.a

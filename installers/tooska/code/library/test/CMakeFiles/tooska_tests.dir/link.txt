@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/tooska_tests.dir/main.cpp.o  -o tooska_tests -Wl,-rpath,/home/radon/Uni/mir/final/final/installers/tooska/code/src ../src/libtooska.so -lpthread 

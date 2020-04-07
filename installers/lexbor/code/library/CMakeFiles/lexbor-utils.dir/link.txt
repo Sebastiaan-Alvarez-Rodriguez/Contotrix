@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -O2 -Wall -pedantic -pipe -std=c99 -fPIC  -shared -Wl,-soname,liblexbor-utils.so.0 -o liblexbor-utils.so.0.3.0 CMakeFiles/lexbor-utils.dir/source/lexbor/utils/http.c.o CMakeFiles/lexbor-utils.dir/source/lexbor/utils/warc.c.o -Wl,-rpath,/home/radon/Uni/mir/final/wip/lexbor: liblexbor-core.so.1.3.1 -lm 

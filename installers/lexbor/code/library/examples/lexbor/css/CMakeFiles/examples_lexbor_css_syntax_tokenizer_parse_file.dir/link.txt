@@ -1,0 +1,1 @@
+/usr/bin/cc  -O2 -Wall -pedantic -pipe -std=c99 -fPIC  -rdynamic CMakeFiles/examples_lexbor_css_syntax_tokenizer_parse_file.dir/syntax/tokenizer_parse_file.c.o  -o syntax/tokenizer_parse_file -Wl,-rpath,/home/radon/Uni/mir/final/wip/lexbor ../../../liblexbor.so.1.0.0 -lm 

@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -O2 -Wall -pedantic -pipe -std=c99 -fPIC  -shared -Wl,-soname,liblexbor-ns.so.1 -o liblexbor-ns.so.1.2.0 CMakeFiles/lexbor-ns.dir/source/lexbor/ns/ns.c.o -Wl,-rpath,/home/radon/Uni/mir/final/wip/lexbor: liblexbor-core.so.1.3.1 -lm 

@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblexbor-css_static.a  CMakeFiles/lexbor-css_static.dir/source/lexbor/css/syntax/consume.c.o CMakeFiles/lexbor-css_static.dir/source/lexbor/css/syntax/state.c.o CMakeFiles/lexbor-css_static.dir/source/lexbor/css/syntax/token.c.o CMakeFiles/lexbor-css_static.dir/source/lexbor/css/syntax/tokenizer.c.o CMakeFiles/lexbor-css_static.dir/source/lexbor/css/syntax/tokenizer/error.c.o
+/usr/bin/ranlib liblexbor-css_static.a

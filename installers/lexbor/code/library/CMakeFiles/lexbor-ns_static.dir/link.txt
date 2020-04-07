@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblexbor-ns_static.a  CMakeFiles/lexbor-ns_static.dir/source/lexbor/ns/ns.c.o
+/usr/bin/ranlib liblexbor-ns_static.a

@@ -16,25 +16,33 @@ def help():
 Commands:
     help
         Show this info
+    
     install <name>
         Installs tool to use
+
+    remove/deinstall/de-install <name>
+    
     execute <names>
         Executes test on all given names of tools
+    
     exit/quit
         Stops this program
 ''')
 
 
 def get_command():
-    return input("prompt> ").strip()
+    try:
+        return input("prompt> ").strip()
+    except (KeyboardInterrupt, EOFError,) as e:
+        print('\n')
+        return 'q'
 
 
 # Main function of this framework. Prints current installation state and
 # allows user to install, execute and reconfigure, dependening on this state
 def main():
     command = get_command()
-    if command == '1':
-        command = 'install haut'
+
     while command.lower() not in ['q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
@@ -50,6 +58,7 @@ def main():
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()
+
 
 if __name__ == '__main__':
     main()

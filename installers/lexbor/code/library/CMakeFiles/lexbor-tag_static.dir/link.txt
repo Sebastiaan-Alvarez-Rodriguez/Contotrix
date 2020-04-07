@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblexbor-tag_static.a  CMakeFiles/lexbor-tag_static.dir/source/lexbor/tag/tag.c.o
+/usr/bin/ranlib liblexbor-tag_static.a
