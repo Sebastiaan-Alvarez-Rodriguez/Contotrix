@@ -1,0 +1,7 @@
+<?xml version="1.0">
+<conf>
+    <deps>
+        <d type="minimum">Python3.3</d>
+        <d>lxml</d>
+    </deps>
+</conf>
