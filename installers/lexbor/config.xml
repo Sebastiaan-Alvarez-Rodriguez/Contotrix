@@ -1,0 +1,8 @@
+<?xml version="1.0">
+<conf>
+    <deps>
+        <d>GNU Make</d>
+        <d>CMake</d>
+        <d type="minimum">C-99</d>
+    </deps>
+</conf>
