@@ -13,6 +13,7 @@ class Settings(object):
         self.idir = fs.join(self.root, self.idirname)
         self.ifile = 'install.py'
         self.wdir = fs.join(self.root,'installed')
-
+        self.efile = 'execute.py'
+        self.ddir = fs.join(self.root,'data')
 global settings
 settings = Settings()

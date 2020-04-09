@@ -1,102 +1,90 @@
-#!/usr/bin/env python
-
-import datetime
+import subprocess
+import multiprocessing
 import time
+import os
 
-import lib.firepool.firepool as fpool
-import lib.independence.fs as fs
-import lib.logger.logger as lgr
-import lib.settings as s
-import lib.ui.menu as menu
-import lib.ui.color as printer
+import lib.ui.color
+import lib.fs as fs
+from lib.execute.logger import Logger
 
-# The greater purpose of (functions in) this file is
-# to run executions
-
-# Function which handles setup before running an execution
-# Unsuitable for parallelization e.g. due to possible user input requests
-def prepare_execute(execomponent):
-    execomponent.prepare_execute()
-
-# Print starting method (success/warnings/errors)
-def print_start(comp, apk_name):
-    color_comp = printer.format(comp, printer.Color.CAN)
-    print('[{0}] Starting analysis of {1}'.format(color_comp,apk_name))
-
-# Print exit status when finished (success/warnings/errors/timeout)
-def print_finish(comp, apk_name, warnings, success, timeout):
-    color_comp = printer.format(comp, printer.Color.CAN)
-    basicstring = '[{0}] Finished analysis of {1}'.format(color_comp,apk_name)
-
-    if success:
-        color_success = printer.format('with success', printer.Color.GRN)
-        successstring = '{0} {1}'.format(basicstring, color_success)
-        if warnings:
-            print('{0} (and warnings)'.format(successstring))
-        else:
-            print(successstring)
-    elif timeout:
-        color_timeout = printer.format('with timeout', printer.Color.PRP)
-        print('{0} {1}'.format(basicstring, color_timeout))
-    else:
-        color_error = printer.format('with errors', printer.Color.RED)
-        print('{0} {1}'.format(basicstring, color_error))
-
-# Function which handles the running of one analysis.
-# This function is suitable for parallelization
-def parallel_execute(execomponent, task, ramamount, timeout, logqueue):
-    print_start(task.methodcomponent, fs.basename(task.apk.path))
-
+# Function which handles the running of one parser call
+# Tasks should be an iterable of lists of form ([parser, htmlfilename, htmldata, repeats], ...)
+def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content, repeats, logqueue):
+    print('About to execute command "{0}" in cwd "{1}"'.format(tool_execrule, fs.abspathfile(__file__)))
     start = time.time()
-    warnings, success, had_timeout = execomponent.execute(task, ramamount, timeout)
+    try:
+        output = subprocess.check_output(['/usr/bin/python3', 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], cwd=fs.abspathfile(__file__), universal_newlines=True, input=html_content)
+    except Exception as e:
+        raise e
+    print(output)
     end = time.time()
-    totaltime = end - start
-    apk_size = fs.sizeof(task.apk.path)
-    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7}'.format(
-        str(task.methodcomponent),
-        fs.basename(task.apk.path),
-        task.apk.malware,
-        totaltime,
-        warnings,
-        success if not had_timeout else False,
-        had_timeout,
-        apk_size
+    # Parse output
+    splitted = output.decode('utf-8').split(',')
+    links_found = int(splitted[0])
+    ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = splitted[1:]
+    # Acquire extra info
+    total_time = end - start
+    html_name = task[1]
+    html_size = len(task[2])
+
+    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}'.format(
+        tool_name,
+        html_name,
+        html_size,
+        total_time,
+        links_found,
+        ru_utime,
+        ru_stime,
+        ru_maxrss,
+        ru_minflt,
+        ru_majflt
     ))
-    print_finish(task.methodcomponent, fs.basename(task.apk.path), warnings, success, had_timeout)
 
-# Function which handles cleaning things up after running an analysis
-# Unsuitable for parallelization since it just cleans up (e.g. stop a database)
-def post_execute(execomponent):
-    execomponent.post_execute()
 
-# Generate required arguments for each specified apk to be multiprocessed
-def arg_generator(execomponent, firepool, logger, timeout):
-    args = []
-    for task in execomponent.tasks:
-        args.append((execomponent,task,firepool.rampercore,timeout,logger.logqueue,))
-    return args
-
-# Ask for a timeout
-def ask_timeout():
+# Ask how many cores to use for execution
+def ask_cores(max_cores=None):
+    if max_cores != None:
+        show_max = min(max_cores, multiprocessing.cpu_count())
+    else:
+        show_max = None
     while True:
-        timeout = input('Please give a timeout (seconds) for a single analysis execution: ')
-        if timeout.isdigit() and int(timeout) > 0:
-            return int(timeout)
+        print('You have {0} cores.'.format(multiprocessing.cpu_count()))
+        if show_max != None:
+            answer = input('How many cores to use for processing? (max={0}) '.format(show_max))
         else:
-            print('Print a number > 0')
+            answer = input('How many cores to use for processing? ')
+        try:
+            amount = int(answer)
+        except Exception as e:
+            printerr('Could not convert "{0}" to a number'.format(amount))
+            continue
 
-# Run given component on execution configuration
-def execute(execomponent):
-    prepare_execute(execomponent)
+        if amount < 1:
+            printerr('Need at least 1 core')
+            continue
+        if amount > multiprocessing.cpu_count():
+            printerr('You do not have {0} cores'.format(amount))
+            continue
+        if show_max != None and int(amount) > show_max:
+            printerr('Please do not specify more than {0} cores'.format(show_max))
+            continue
+        return amount
 
-    logger = lgr.Logger(fs.join(execomponent.resultdir,'results.csv'))
-    firepool = fpool.Firepool()
-    timeout = ask_timeout()
-    args = arg_generator(execomponent, firepool, logger, timeout)
+
+def argument_generator(data, repeats, tools, logqueue):
+    for item in [x for x in fs.ls(data) if x.endswith('.html')]:
+        with open(fs.join(data, item), 'r') as file:
+            content = file.read()
+        for tool in tools:
+            yield (tool[0], tool[1], tool[2], item, content, repeats, logqueue,)
 
 
+# Data, repeats, [[name, location, execrule], ...], loglocation
+def execute(data, repeats, tools, loglocation):
+    cores = ask_cores()
+    logger = Logger(loglocation)
+    args = [x for x in argument_generator(data, repeats, tools, logger.logqueue)]
     logger.start()
-    firepool.fire(parallel_execute, args)
+    with multiprocessing.Pool(processes=cores) as pool:
+        pool.starmap(parallel_execute, args)
     logger.stop()
-
-    post_execute(execomponent)

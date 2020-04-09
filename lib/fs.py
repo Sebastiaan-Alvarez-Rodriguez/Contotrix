@@ -31,6 +31,9 @@ def exists(path, *args):
 def isdir(path, *args):
     return os.path.isdir(join(path,*args))
 
+def isemptydir(path, *args):
+    return len(ls(path, *args)) == 0
+
 def isfile(path, *args):
     return os.path.isfile(join(path,*args))
 
@@ -70,7 +73,8 @@ def sep():
     return os.sep
 
 # Return size of file in bytes
-def sizeof(path):
+def sizeof(directory, *args):
+    path = join(directory, *args)
     if not isfile(path):
         raise RuntimeError('Error: "{0}" is no path to a file'.format(path))
     return os.path.getsize(path)

@@ -53,8 +53,8 @@ def main():
             tools.install(tail)
         elif head in ['remove', 'deinstall', 'de-install']:
             tools.remove(tail)
-        elif head == 'execute':
-            pass
+        elif head in ['exec', 'execute']:
+            tools.execute(tail)
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()

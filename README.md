@@ -11,6 +11,10 @@ In C:
  4. Tooska (but gives errors/warnings for no reason)
 In Python:
  1. html.parser (pyTHMLParser)
+ 2. beautifulsoup (pyBeautifulSoup)
+ 3. lxml (pylxml)
+In Java:
+TODO: Get Java parsers
 
 ## HTML parsers for Python
 [here](https://stackoverflow.com/questions/11709079/parsing-html-using-python)

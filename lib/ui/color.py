@@ -16,7 +16,13 @@ class Color(Enum):
     CAN = '\033[1;36m'
     CLR = '\033[0m'
 
-# Format a string with a color!
+def printc(string, color, end='\n'):
+    print(format(string, color), end=end)
+
+def printerr(string, color=Color.RED, end='\n'):
+    print(format(string, color), end=end)
+
+# Format a string with a color
 def format(string, color):
     if os.name == 'posix':
         return '{0}{1}{2}'.format(color.value, string, Color.CLR.value)
