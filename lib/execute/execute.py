@@ -10,22 +10,18 @@ from lib.execute.logger import Logger
 # Function which handles the running of one parser call
 # Tasks should be an iterable of lists of form ([parser, htmlfilename, htmldata, repeats], ...)
 def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content, repeats, logqueue):
-    print('About to execute command "{0}" in cwd "{1}"'.format(tool_execrule, fs.abspathfile(__file__)))
+    html_size = len(html_content)
+    cmd_input = html_size.to_bytes(4, byteorder='little', signed=False)
+    cmd_input += html_content
     start = time.time()
-    try:
-        output = subprocess.check_output(['/usr/bin/python3', 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], cwd=fs.abspathfile(__file__), universal_newlines=True, input=html_content)
-    except Exception as e:
-        raise e
-    print(output)
+    output = subprocess.check_output(['/usr/bin/python3', 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], cwd=fs.abspathfile(__file__), input=cmd_input)
     end = time.time()
-    # Parse output
-    splitted = output.decode('utf-8').split(',')
+
+    splitted = output.decode('utf-8').strip().split(',')
     links_found = int(splitted[0])
     ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = splitted[1:]
-    # Acquire extra info
+
     total_time = end - start
-    html_name = task[1]
-    html_size = len(task[2])
 
     logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}'.format(
         tool_name,
@@ -73,7 +69,7 @@ def ask_cores(max_cores=None):
 
 def argument_generator(data, repeats, tools, logqueue):
     for item in [x for x in fs.ls(data) if x.endswith('.html')]:
-        with open(fs.join(data, item), 'r') as file:
+        with open(fs.join(data, item), 'rb') as file:
             content = file.read()
         for tool in tools:
             yield (tool[0], tool[1], tool[2], item, content, repeats, logqueue,)
