@@ -7,17 +7,17 @@ import sys
 import subprocess
 import resource
 
-print('Statexec: got {0} parameters'.format(len(sys.argv)), file=sys.stderr)
-print('execrule: {0}'.format(sys.argv[1]), file=sys.stderr)
-print('repeats: {0}'.format(sys.argv[2]), file=sys.stderr)
-# output = subprocess.check_output(['installed/haut/Haut', 'data/', '2000'], cwd='/home/radon/Uni/mir/final/final')
+# print('Statexec: got {0} parameters'.format(len(sys.argv)), file=sys.stderr)
+# print('execrule: {0}'.format(sys.argv[1]), file=sys.stderr)
+# print('repeats: {0}'.format(sys.argv[2]), file=sys.stderr)
+
 cmd = sys.argv[1].split(' ') # execrule
 cmd.append(sys.argv[2])      # repeats
 output = int(subprocess.check_output(cmd, cwd=sys.argv[3], input=sys.stdin.buffer.read()))
 usages = resource.getrusage(resource.RUSAGE_CHILDREN)
 # https://docs.python.org/3/library/resource.html
 fields = []
-fields.append(output)
+fields.append(output)           # Number of links found
 fields.append(usages.ru_utime)  # User time (float)
 fields.append(usages.ru_stime)  # System time (float)
 fields.append(usages.ru_maxrss) # Maximal ram usage (kb)

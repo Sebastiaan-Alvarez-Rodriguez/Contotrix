@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 
 from enum import Enum
+from lib.ui.color import printerr
+import lib.fs as fs
 
-import lib.independence.fs as fs
-
-# The greater purpose of (functions in) this file is
-# to provide standard user-interaction functions
-
-# Return dict mapping true to all currently installed components,
-# and false to all non-installed components
-def installed_states(components):
-    statedict = {}
-    statedict[True] = []
-    statedict[False] = []
-    for component in components:
-        statedict[component.is_installed()].append(component)
-    return statedict
+# Purpose of (functions in) this file is to provide standard user-interaction functions
 
 # Simple method to ask user a yes/no question. Result returned as boolean.
 # Returns True if user responded positive, otherwise False
@@ -54,8 +43,7 @@ def ask_directory(question, must_exist=True):
         print('')
 
 # ask user for a path (directory+file)
-# must_exist determines whether given path explicitly must or must not exist
-def ask_path(question, must_exist=True):
+def ask_path(question, exist_ok=False):
     while True:
         print(question)
         print('Paths may be absolute or relative to your working directory')
@@ -64,18 +52,17 @@ def ask_path(question, must_exist=True):
         choice = input('')
         choice = fs.abspath(choice)
         if not fs.isdir(fs.dirname(choice)):
-            print('Error: no such directory - "{0}"'.format(fs.dirname(choice)))
-        elif must_exist:
-            if fs.exists(choice):
+            printerr('No such directory "{0}"'.format(fs.dirname(choice)))
+        elif fs.isdir(choice):
+                printerr('"{0}" is a directory'.format(choice))
+        elif fs.isfile(choice):
+            if exist_ok:    
                 return choice
             else:
-                print('"{0}" does not exist'.format(choice))
-        else:
-            if fs.isfile(choice):
                 if standard_yesno('"{0}" exists, override?'.format(choice)):
                     return choice
-            elif fs.isdir(choice):
-                print('"{0}" is a directory'.format(choice))
+        else:
+            return choice;
         print('')
 
 # Ask for a filename

@@ -3,7 +3,7 @@ import multiprocessing
 import time
 import os
 
-from lib.ui.color import printerr
+from lib.ui.color import printc, Color, printerr
 import lib.fs as fs
 from lib.execute.logger import Logger
 
@@ -13,9 +13,18 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
     html_size = len(html_content)
     cmd_input = html_size.to_bytes(4, byteorder='little', signed=False)
     cmd_input += html_content
+    print('Starting execution of ', end='')
+    printc('{0} '.format(tool_name), Color.CAN, end='')
+    print('on ', end='')
+    printc('{0} '.format(html_name), Color.YEL)
     start = time.time()
     output = subprocess.check_output(['/usr/bin/python3', 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], cwd=fs.abspathfile(__file__), input=cmd_input)
     end = time.time()
+    print('Execution of ', end='')
+    printc('{0} '.format(tool_name), Color.CAN, end='')
+    print('on ', end='')
+    printc('{0} '.format(html_name), Color.YEL, end='')
+    print('complete!')
 
     splitted = output.decode('utf-8').strip().split(',')
     links_found = int(splitted[0])
@@ -75,10 +84,10 @@ def argument_generator(data, repeats, tools, logqueue):
             yield (tool[0], tool[1], tool[2], item, content, repeats, logqueue,)
 
 
-# Data, repeats, [[name, location, execrule], ...], loglocation
-def execute(data, repeats, tools, loglocation):
+# Data, repeats, [[name, location, execrule], ...], csvlocation
+def execute(data, repeats, tools, csvlocation):
     cores = ask_cores()
-    logger = Logger(loglocation)
+    logger = Logger(csvlocation)
     args = [x for x in argument_generator(data, repeats, tools, logger.logqueue)]
     logger.start()
     with multiprocessing.Pool(processes=cores) as pool:

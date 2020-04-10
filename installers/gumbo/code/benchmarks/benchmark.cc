@@ -8,15 +8,15 @@
 static void search_for_links(GumboNode* node, size_t* amount_links) {
     if (node->type != GUMBO_NODE_ELEMENT)
         return;
-    GumboAttribute* href;
+    GumboAttribute* href = 0x0;
     if (node->v.element.tag == GUMBO_TAG_A && (href = gumbo_get_attribute(&node->v.element.attributes, "href")))
         ++(*amount_links);
 
     GumboVector* children = &node->v.element.children;
     for (unsigned i = 0; i < children->length; ++i)
         search_for_links(static_cast<GumboNode*>(children->data[i]), amount_links);
-
 }
+
 
 int main(int argc, char** argv) {
     if (argc != 2) {
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     }
 
     unsigned length;
-    std::cin >> length;
+    std::cin.read((char*) &length, 4);
     char* content = new char[length];
     std::cin.read(content, length);
 

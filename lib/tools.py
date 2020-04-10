@@ -5,6 +5,7 @@ import lib.util as util
 
 from lib.ui.color import Color, printc, printerr
 from lib.settings import settings
+from lib.ui.menu import ask_path
 import lib.execute.execute as exe
 
 def install(names):
@@ -72,6 +73,10 @@ def execute(args):
         if not fs.isdir(fs.join(settings.wdir,name)):
             printerr('No tool named "{0}" installed'.format(name))
             return
+        if not fs.isfile(fs.join(settings.idir,name,settings.efile)):
+            print('Filepath was: {0}'.format(fs.join(settings.wdir,name,settings.efile)))
+            printerr('Tool "{0}" has no {1} to run it'.format(name, settings.efile))
+            return
 
     html_files_found = len([x for x in fs.ls(settings.ddir) if x.endswith('.html')])
 
@@ -86,15 +91,16 @@ def execute(args):
         tools.append([name, fs.join(settings.wdir,name), execrule])
 
 
-    loglocation = '/tmp/loggo_sebastiaano.log'
-    #TODO: Ask user for location
+    csvloc = ask_path('We need a path to store CSV output.', exist_ok=False)
+    if fs.isfile(csvloc):
+        fs.rm(csvloc)
+
+    print('Starting execution for ', end='')
+    printc('{0} '.format(html_files_found), Color.CAN, end='')
+    print('html files, ', end='')
+    printc('{0} '.format(repeats), Color.GRN, end='')
+    print('repeats')
 
 
-    printc('Starting execution for ', Color.CAN, end='')
-    printc('{0} html files'.format(html_files_found), Color.PRP, end='')
-    print(', ', end='')
-    printc('{0} repeats'.format(repeats), Color.YEL)
-
-
-    exe.execute(settings.ddir, repeats, tools, loglocation)
+    exe.execute(settings.ddir, repeats, tools, csvloc)
     printc('Execution successful!', Color.GRN)
