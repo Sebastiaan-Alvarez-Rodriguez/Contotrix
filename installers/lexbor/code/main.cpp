@@ -1,90 +1,69 @@
-#include <dirent.h>
-#include <fstream>
 #include <iostream>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string>
+#include <stdio.h>
 
 #include <lexbor/html/html.h>
+#include <lexbor/dom/dom.h>
 
-std::string getContents(const std::string& path) {
-    std::ifstream in(path, std::ios::in | std::ios::binary);
-    if (!in) {
-        std::cout << "File " << path << " couldn't be read!\n";
-        exit(EXIT_FAILURE);
-    }
-
-    std::string contents;
-    in.seekg(0, std::ios::end);
-    contents.resize(in.tellg());
-    in.seekg(0, std::ios::beg);
-    in.read(&contents[0], contents.size());
-    in.close();
-    return contents;
-}
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        std::cout << "Usage: "<<argv[0]<<" <data> <repeats>\n";
-        exit(EXIT_FAILURE);
-    }
-
-    DIR* dir;
-    struct dirent* file;
-
-    if ((dir = opendir(argv[1])) == NULL) {
-        std::cout << "Couldn't open directory '"<<argv[1]<<"'.\n";
+    if (argc != 2) {
+        std::cout << "Usage: "<<argv[0]<<" <repeats>\n";
         exit(EXIT_FAILURE);
     }
 
     size_t repeat;
     try {
-        repeat = std::stoull(argv[2]);
+        repeat = std::stoull(argv[1]);
     } catch(...) {
-        std::cout << "Could not convert '"<<argv[2]<<"' to number\n";
+        std::cout << "Could not convert '"<<argv[1]<<"' to number\n";
         exit(EXIT_FAILURE);
     }
 
-    while ((file = readdir(dir)) != NULL) {
-        std::string filename(file->d_name);
-        if (filename.length() > 5 && filename.compare(filename.length() - 5, 5, ".html") == 0) {
-            std::string path = argv[1];
-            path.append("/");
-            path.append(filename);
-
-            const std::string contents = getContents(path);
-
-            for (size_t i = 0; i < repeat; ++i) {
-                lxb_status_t status;
-                lxb_html_document_t *document;
-
-                /* Initialization */
-                document = lxb_html_document_create();
-                if (document == NULL) {
-                    std::cout << "Failed to create HTML Document for file " << filename << "\n";
-                    continue;
-                }
-
-                /* Parse HTML */
-                status = lxb_html_document_parse(document, (lxb_char_t*)contents.c_str(), contents.size());
-                if (status != LXB_STATUS_OK) {
-                    std::cout << "Failed to parse HTML for file " << filename << "\n";
-                    continue;
-                }
-
-                // /* Print Incoming Data */
-                // PRINT("HTML:");
-                // PRINT("%s", (const char *) html);
-
-                // /* Print Result */
-                // PRINT("\nHTML Tree:");
-                // serialize(lxb_dom_interface_node(document));
-
-                /* Destroy document */
-                lxb_html_document_destroy(document);
-            }
-       }
+    unsigned length;
+    std::cin.read((char*) &length, 4);
+    char* content = new char[length];
+    std::cin.read(content, length);
+    for (size_t i = 0; i < repeat-1; ++i) {
+        lxb_html_parser_t* parser = lxb_html_parser_create();
+        lxb_status_t status = lxb_html_parser_init(parser);
+        // if (status != LXB_STATUS_OK)
+        //     return 1;
+        
+        lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, length);
+        // if (document == NULL)
+        //     return 1;
+        lxb_html_parser_destroy(parser);
+        lxb_html_document_destroy(document);
     }
-    closedir(dir);
-    return 0;
+
+
+    lxb_html_parser_t* parser = lxb_html_parser_create();
+    lxb_status_t status = lxb_html_parser_init(parser);
+    // if (status != LXB_STATUS_OK)
+    //     return 1;
+    lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, length);
+    // if (document == NULL)
+    //     return 2;
+    lxb_html_parser_destroy(parser);
+    lxb_dom_collection_t* collection = lxb_dom_collection_make(&document->dom_document, 64);
+    // if (collection == NULL)
+    //     return 3;
+    status = lxb_dom_elements_by_tag_name(lxb_dom_interface_element(document->body), collection, (const lxb_char_t*) "a", 1);
+    // if (status != LXB_STATUS_OK)
+    //     return 4;
+
+    size_t amount_links = 0;
+    for (size_t x = 0; x < lxb_dom_collection_length(collection); ++x) {
+        lxb_dom_element_t* element = lxb_dom_collection_element(collection, x);
+        if (lxb_dom_element_has_attribute(element, (const lxb_char_t*) "href", 4))
+            ++amount_links;
+    }
+    std::cout << amount_links;
+    lxb_dom_collection_destroy(collection, true);
+    lxb_html_document_destroy(document);
+
+    free(content);
 }

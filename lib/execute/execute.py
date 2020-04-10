@@ -3,7 +3,7 @@ import multiprocessing
 import time
 import os
 
-import lib.ui.color
+from lib.ui.color import printerr
 import lib.fs as fs
 from lib.execute.logger import Logger
 

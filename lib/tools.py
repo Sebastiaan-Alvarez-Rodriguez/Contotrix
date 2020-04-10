@@ -63,7 +63,7 @@ def execute(args):
     try:
         repeats = int(splitted[0])
     except Exception as e:
-        printerr('Cannot convert "{0}" to number'.format(splitted[1]))
+        printerr('Cannot convert "{0}" to number'.format(splitted[0]))
         return
 
     modnames = splitted[1:]

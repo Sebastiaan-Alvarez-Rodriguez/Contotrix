@@ -55,6 +55,7 @@ static void speed_test(size_t repeat) {
     haut_setInput(&parser, content, length);
     haut_parse(&parser);
     haut_destroy(&parser);
+    free(content);
     printf("%lu", amount_links);
 }
 
