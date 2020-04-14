@@ -3,6 +3,6 @@
     <deps>
         <d>GNU Make</d>
         <d type="minimum">libcurl3-dev</d>
-        <d type="minimum">C-99</d>
+        <d type="minimum">C-11</d>
     </deps>
 </conf>

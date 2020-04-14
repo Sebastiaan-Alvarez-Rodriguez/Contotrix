@@ -25,6 +25,9 @@ Commands:
     execute <repeats> <name(s)>
         Executes test on all given names of tools
     
+    download <begin url> <amount>
+        Crawls the web, starting at <url>, for <amount> urls (or until no suitable urls remain)
+
     exit/quit
         Stops this program
 ''')
@@ -55,6 +58,8 @@ def main():
             tools.remove(tail)
         elif head in ['exec', 'execute']:
             tools.execute(tail)
+        elif head in ['dl', 'download']:
+            tools.download(tail)
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()

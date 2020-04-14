@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import importlib
+import subprocess
+
 import lib.fs as fs
 import lib.util as util
 import lib.xml as xml
@@ -30,9 +32,11 @@ def install(names):
             printc('{0:20}  {1}'.format('Name', 'minimum'), Color.GRN)
             for name, minimum in deps:
                 print('{0:20}  {1}'.format(name, minimum))
-            if not standard_yesno('Continue?'):
-                printerr('Installation cancelled')
-                return
+        else:
+            print('No dependencies found for {0}'.format(name))
+        if not standard_yesno('Continue?'):
+            printerr('Installation cancelled')
+            return
 
     for name in modnames:
         installLocation = fs.join(settings.wdir,name)
@@ -119,3 +123,59 @@ def execute(args):
 
     exe.execute(settings.ddir, repeats, tools, csvloc)
     printc('Execution successful!', Color.GRN)
+
+
+def download(args):
+    splitted = args.split(' ')
+    if len(splitted) != 2:
+        printerr('Need at least 2 arguments to execute: <begin url>, <amount>')
+        return
+
+    try:
+        amount = int(splitted[1])
+    except Exception as e:
+        printerr('Cannot convert "{0}" to number'.format(splitted[1]))
+        return
+
+    if not fs.isfile(settings.root, 'lib', 'download', 'downloader'):
+        print('In order to execute the downloader, you need a compiler with ', end='')
+        printc('c-11,c++14', Color.CAN, end=' ')
+        print('support and ')
+        printc('libcurl3-dev', Color.CAN, end=' ')
+        print('or newer')
+
+        if not standard_yesno('Continue?'):
+            printerr('Download cancelled')
+            return
+
+        try:
+            subprocess.check_output(['make', 'fast'], cwd=fs.join(settings.root, 'lib', 'download'))
+        except subprocess.CalledProcessError as e:
+            printerr('Compilation error')
+            return
+        except Exception as e:
+            printerr('No GNU make available: Please install GNU Make first!')
+            return
+        printc('Downloader successfully compiled', Color.GRN)
+    
+    print('Downloading ', end='')
+    printc(str(amount), Color.PRP, end=' html pages\n')
+
+    print('Calling args: {0}'.format([fs.join(settings.root, 'lib', 'download','downloader'), splitted[0], settings.ddir, str(amount)]))
+
+    try:
+        out = subprocess.check_output([fs.join(settings.root, 'lib', 'download','downloader'), splitted[0], settings.ddir, str(amount)])
+    except subprocess.CalledProcessError as e:
+        printerr('Unknown exception occured in downloader')
+        print(e)
+        return
+    except Exception as e:
+        printerr('Unknown exception occured in downloader')
+        print(e)
+        return
+
+    downloaded = int(out.decode('utf-8'))
+    if downloaded == amount:
+        printc('Download successful!', Color.GRN)
+    else:
+        printc('Download partly successful', Color.YEL, end=' (web exhausted after {0} links)\n'.format(downloaded))

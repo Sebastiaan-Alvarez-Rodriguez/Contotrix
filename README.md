@@ -1,7 +1,7 @@
 # Current ideas
- 1. Get code of parsers to work
- 2. Use python framework to run code using subprocesses
- 3. Use psutil.memory_percent() for avg mem usage and psutil.cpu_percent() for avg cpu usage . See [here](https://psutil.readthedocs.io/en/latest/)
+ 1. DONE - Get code of parsers to work
+ 2. DONE - Use python framework to run code using subprocesses
+ 3. DONE - Use psutil.memory_percent() for avg mem usage and psutil.cpu_percent() for avg cpu usage . See [here](https://psutil.readthedocs.io/en/latest/)
 
 # Currently working
 In C:
@@ -15,6 +15,12 @@ In Python:
  3. lxml (pylxml)
 In Java:
 TODO: Get Java parsers
+
+# Datasets
+ Some large ones:
+ 1. [Websites reffering to wikipedia](https://code.google.com/archive/p/wiki-links/downloads)
+ 2. [Mine for more datasets](https://www.researchgate.net/post/Where_can_I_find_the_web_pages_dataset_for_information_extraction)
+ 3. Go collecting myself?
 
 ## HTML parsers for Python
 [here](https://stackoverflow.com/questions/11709079/parsing-html-using-python)
