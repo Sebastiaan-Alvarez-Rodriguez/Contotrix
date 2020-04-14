@@ -2,10 +2,11 @@
 import importlib
 import lib.fs as fs
 import lib.util as util
+import lib.xml as xml
 
 from lib.ui.color import Color, printc, printerr
 from lib.settings import settings
-from lib.ui.menu import ask_path
+from lib.ui.menu import ask_path, standard_yesno
 import lib.execute.execute as exe
 
 def install(names):
@@ -14,10 +15,24 @@ def install(names):
         return
     modnames = names.split(' ')
     for name in modnames:
-        installFile = fs.join(settings.idir,name,settings.ifile)
-        if not fs.isfile(installFile):
+        if not fs.isfile(fs.join(settings.idir,name,settings.ifile)):
             printerr('No installer for "{0}" available'.format(name))
             return
+        if not fs.isfile(fs.join(settings.idir,name,settings.cfile)):
+            printerr('No config file available')
+
+        xmlconf = xml.Config(fs.join(settings.idirname, name, settings.cfile))
+        deps = xmlconf.get_dependencies()
+        if len(deps) > 0:
+            maxnamelen = max([len(x[0]) for x in deps])
+            print('You need to have the following installed for ', end='')
+            printc('{0}'.format(name), Color.CAN, end=':\n')
+            printc('{0:20}  {1}'.format('Name', 'minimum'), Color.GRN)
+            for name, minimum in deps:
+                print('{0:20}  {1}'.format(name, minimum))
+            if not standard_yesno('Continue?'):
+                printerr('Installation cancelled')
+                return
 
     for name in modnames:
         installLocation = fs.join(settings.wdir,name)

@@ -1,4 +1,4 @@
-<?xml version="1.0">
+<?xml version="1.0"?>
 <conf>
     <deps>
         <d type="minimum">Python3.3</d>

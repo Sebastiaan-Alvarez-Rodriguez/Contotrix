@@ -5,22 +5,24 @@ import os
 import lxml.html
 
 def main():
-    if len(sys.argv) < 3:
-        print('Usage: {0} <data> <repeats>'.format(sys.argv[0]))
+    if len(sys.argv) < 2:
+        print('Usage: {0} <repeats>'.format(sys.argv[0]))
         return 1
-    data = sys.argv[1]
+
     try:
-        repeats = int(sys.argv[2])
+        repeats = int(sys.argv[1])
     except Exception as e:
-        print('Could not convert "{0}" to number'.format(sys.argv[2]))
+        print('Could not convert "{0}" to number'.format(sys.argv[1]))
         return 2
 
-    for item in os.listdir(data):
-        path = data+os.sep+item
-        with open(path, 'r') as file:
-            contents = file.read()
-        for x in range(repeats):
-            root = lxml.html.fromstring(contents)
+    sys.stdin.read(4)
+    content = sys.stdin.read()
+
+    for x in range(repeats-1):
+        root = lxml.html.fromstring(content)
+    root = lxml.html.fromstring(content)
+    urls = root.xpath('//a/@href')
+    print(str(len(urls)))
 
 if __name__ == '__main__':
     main()

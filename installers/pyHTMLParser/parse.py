@@ -4,24 +4,37 @@ import os
 
 from html.parser import HTMLParser
 
+class LinkParser(HTMLParser):
+    def __init__(self):
+        self.counter = 0
+        HTMLParser.__init__(self)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a' and 'href' in [x for x,_ in attrs]:
+            self.counter += 1
+
+
 def main():
-    if len(sys.argv) < 3:
-        print('Usage: {0} <data> <repeats>'.format(sys.argv[0]))
+    if len(sys.argv) != 2:
+        print('Usage: {0} <repeats>'.format(sys.argv[0]))
         return 1
-    data = sys.argv[1]
+
     try:
-        repeats = int(sys.argv[2])
+        repeats = int(sys.argv[1])
     except Exception as e:
-        print('Could not convert "{0}" to number'.format(sys.argv[2]))
+        print('Could not convert "{0}" to number'.format(sys.argv[1]))
         return 2
 
-    for item in os.listdir(data):
-        path = data+os.sep+item
-        with open(path, 'r') as file:
-            contents = file.read()
-        for x in range(repeats):
-            parser = HTMLParser()
-            parser.feed(contents)
+    sys.stdin.read(4)
+    content = sys.stdin.read()
+
+    for x in range(repeats-1):
+        parser = HTMLParser()
+        parser.feed(content)
+
+    parser = LinkParser()
+    parser.feed(content)
+    print(str(parser.counter))
 
 if __name__ == '__main__':
     main()

@@ -12,8 +12,9 @@ class Settings(object):
         self.idirname = 'installers'
         self.idir = fs.join(self.root, self.idirname)
         self.ifile = 'install.py'
-        self.wdir = fs.join(self.root,'installed')
+        self.cfile = 'config.xml'
         self.efile = 'execute.py'
+        self.wdir = fs.join(self.root,'installed')
         self.ddir = fs.join(self.root,'data')
 global settings
 settings = Settings()

@@ -14,8 +14,9 @@ def main():
         print('Could not convert "{0}" to number'.format(sys.argv[1]))
         return 2
 
+    sys.stdin.read(4)
     content = sys.stdin.read()
-    for x in range(repeats):
+    for x in range(repeats-1):
         parsed = BeautifulSoup(content)
     print(str(len([x for x in parsed.find_all('a', href=True)])))
 

@@ -17,12 +17,12 @@ Commands:
     help
         Show this info
     
-    install <name>
+    install <name(s)>
         Installs tool to use
 
-    remove/deinstall/de-install <name>
+    remove/deinstall/de-install <name(s)>
     
-    execute <names>
+    execute <repeats> <name(s)>
         Executes test on all given names of tools
     
     exit/quit

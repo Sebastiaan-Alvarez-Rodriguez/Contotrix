@@ -1,4 +1,4 @@
-<?xml version="1.0">
+<?xml version="1.0"?>
 <conf>
     <deps>
         <d>GNU Make</d>

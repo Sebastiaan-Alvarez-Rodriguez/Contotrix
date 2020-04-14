@@ -4,14 +4,26 @@ import xml.etree.ElementTree as tree
 class Config(object):
     def __init__(self, path):
         self.path = path
-        tree = tree.parse(path)
+        t = tree.parse(path)
         self.sections = dict()
-        for child in tree.getRoot():
-            self.sections.update({child.tag, child})
+        for child in t.getroot():
+            print('Child: {0}....{1}'.format(child, child.tag))
+            self.sections[child.tag] = child
 
-    def getSources(self):
+    def get(self, name):
         sources = []
-        for source in self.sections['sources']:
+        for source in self.sections[name]:
             sources.append(source)
-        return  sources     
-        
+        return sources     
+    
+    def get_dependencies(self):
+        l = []
+        for source in self.sections['deps']:
+            l.append((source.text, 'type' in source.attrib and source.attrib['type'] == 'minimum',))
+        return l
+
+    def getChildAttributes(self, name):
+        attributes = []
+        for source in self.sections[name]:
+            attributes.append(source.attrib)
+        return attributes
