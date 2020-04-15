@@ -1,10 +1,11 @@
 #include <haut/haut.h>
-#include <queue>
+#include <deque>
 #include <set>
 #include <string>
 #include <sstream>
 #include <iostream>
 
+#include "sha/sha.h"
 #include "tree/tree.h"
 #include "retriever/retriever.h"
 
@@ -43,12 +44,12 @@ static auto baseurl(const std::string url) {
 
 // Fetch an unvisited url, in a Breadth First Search pattern. 
 // Returns true on success, false if the queue gets empty before finding an unvisited url.
-static bool fetch(std::string& visit_url, Tree& visited, std::queue<std::string>& to_visit) {
+static bool fetch(std::string& visit_url, Tree& visited, std::deque<std::string>& to_visit) {
     do {
         if (to_visit.empty())
             return false;
         visit_url = to_visit.front();
-        to_visit.pop();
+        to_visit.pop_front();
         ;
     } while (!visited.insert(visit_url)); 
     // Note: insert(), right above this line, only returns true if the url did not yet exist.
@@ -64,8 +65,8 @@ static bool fetch(std::string& visit_url, Tree& visited, std::queue<std::string>
 static void crawl(const char* start_url, const char* directory, unsigned long long stop_after) {
     Tree visited;
 
-    std::queue<std::string> to_visit;
-    to_visit.push(start_url);
+    std::deque<std::string> to_visit;
+    to_visit.push_front(start_url);
 
     unsigned long long x;
     for (x = 0; x < stop_after; ++x) {
@@ -75,14 +76,14 @@ static void crawl(const char* start_url, const char* directory, unsigned long lo
 
         // std::cout << "Visiting url "<< x <<": " << visit_url << '\n';
         
-
-        char* urllinks = parse(visit_url.c_str(), baseurl(visit_url).c_str(), directory, std::to_string(x).c_str());
+        std::string name = sha::sha256(visit_url);
+        char* urllinks = parse(visit_url.c_str(), baseurl(visit_url).c_str(), directory, name.c_str());
         if (urllinks != NULL) {
             auto linkset = segment(urllinks);
             free(urllinks);
             // std::cout << "Found "<<linkset.size()<<" links:"<<std::endl;
             for (const auto& url : linkset)
-                to_visit.push(url); //No need to check if url was visited already. fetch() function does that already
+                to_visit.push_front(url); //No need to check if url was visited already. fetch() function does that already
         }
     }
     std::cout << x;
@@ -91,7 +92,7 @@ static void crawl(const char* start_url, const char* directory, unsigned long lo
 
 // Simple function to display information in case someone did not provide the right amount of parameters
 static void usage(const char* name) {
-    std::cout << name << "<web-entrypoint> <data-dir> <stop-after>" << std::endl;
+    std::cout << name << " <web-entrypoint> <data-dir> <stop-after>" << std::endl;
     std::cout<< R"HERE(
     <web-entrypoint> should specify a websitewhere we will start crawling
     <data-dir> specifies a directory to store websites in
