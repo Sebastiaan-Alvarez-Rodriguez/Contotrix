@@ -4,10 +4,19 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 #include "sha/sha.h"
 #include "tree/tree.h"
 #include "retriever/retriever.h"
+
+static inline char separator() {
+#ifdef _WIN32
+    return '\\';
+#else
+    return '/';
+#endif
+}
 
 //Takes a list of urls, separated by '\n', and returns a set containing these urls in form std::string
 static auto segment(const char* const sentence) {
@@ -62,11 +71,14 @@ static bool fetch(std::string& visit_url, Tree& visited, std::deque<std::string>
 //With set difference -> Up to O(n)
 // If I check difference between visited and to_visit every iteration
 // But I do too much work then... The to_visit set is always legitimate, but it is too when I just merge...
-static void crawl(const char* start_url, const char* directory, unsigned long long stop_after) {
+static void crawl(const std::string& start_url, const std::string& directory, unsigned long long stop_after) {
     Tree visited;
 
     std::deque<std::string> to_visit;
     to_visit.push_front(start_url);
+
+    std::string tmp = directory + separator() + "sha256_to_name.txt";
+    std::ofstream file(tmp, std::ios::out | std::ios::app);
 
     unsigned long long x;
     for (x = 0; x < stop_after; ++x) {
@@ -77,15 +89,17 @@ static void crawl(const char* start_url, const char* directory, unsigned long lo
         // std::cout << "Visiting url "<< x <<": " << visit_url << '\n';
         
         std::string name = sha::sha256(visit_url);
-        char* urllinks = parse(visit_url.c_str(), baseurl(visit_url).c_str(), directory, name.c_str());
+        file << visit_url << ' ' << name << '\n';
+        char* urllinks = parse(visit_url.c_str(), baseurl(visit_url).c_str(), directory.c_str(), name.c_str());
         if (urllinks != NULL) {
             auto linkset = segment(urllinks);
             free(urllinks);
-            // std::cout << "Found "<<linkset.size()<<" links:"<<std::endl;
+            // std::cout << "Found "<<linkset.size()<<" links"<<std::endl;
             for (const auto& url : linkset)
                 to_visit.push_front(url); //No need to check if url was visited already. fetch() function does that already
         }
     }
+    file.close();
     std::cout << x;
 }
 

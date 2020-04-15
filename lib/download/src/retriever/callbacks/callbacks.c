@@ -44,6 +44,8 @@ void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value) {
             return;
         if (strncmp(value->data, "tel", 3) == 0)
             return;
+        if (strncmp(value->data, "mailto", 6) == 0)
+            return;
         size_t size = (size_t) value->size;
         bool link_is_relative = value->data[0] == '/';
 

@@ -20,7 +20,7 @@ TODO: Get Java parsers
  Some large ones:
  1. [Websites reffering to wikipedia](https://code.google.com/archive/p/wiki-links/downloads)
  2. [Mine for more datasets](https://www.researchgate.net/post/Where_can_I_find_the_web_pages_dataset_for_information_extraction)
- 3. Go collecting myself?
+ 3. Go collecting myself? I could take from multiple sources, storing by doing md5/sha2 to prevent collisions
 
 ## HTML parsers for Python
 [here](https://stackoverflow.com/questions/11709079/parsing-html-using-python)
