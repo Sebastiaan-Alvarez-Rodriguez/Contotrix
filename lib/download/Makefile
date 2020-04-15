@@ -26,8 +26,8 @@ CFASTFLAGS = $(IDIRS) -std=c11 \
 	-fno-trapping-math \
 	-funroll-loops
 
-CXXFLAGS     = $(IDIRS) -std=c++14 $(WARNINGS) $(DEBUG)
-CXXFASTFLAGS = $(IDIRS) -std=c++14 \
+CXXFLAGS     = $(IDIRS) -std=c++11 $(WARNINGS) $(DEBUG)
+CXXFASTFLAGS = $(IDIRS) -std=c++11 \
 	-Ofast \
 	-march=native \
 	-ffast-math \

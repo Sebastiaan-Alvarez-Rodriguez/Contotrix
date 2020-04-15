@@ -99,7 +99,6 @@ def execute(args):
 
     html_files_found = len([x for x in fs.ls(settings.ddir) if x.endswith('.html')])
 
-    # Make tools a list of lists, like [[name, call]]
     tools = []
     for name in modnames:
         moduleLoc = settings.efile[:-3] if settings.efile.endswith('.py') else settings.efile
@@ -139,7 +138,7 @@ def download(args):
 
     if not fs.isfile(settings.root, 'lib', 'download', 'downloader'):
         print('In order to execute the downloader, you need a compiler with ', end='')
-        printc('c-11,c++14', Color.CAN, end=' ')
+        printc('c-11 and c++11', Color.CAN, end=' ')
         print('support and ')
         printc('libcurl3-dev', Color.CAN, end=' ')
         print('or newer')

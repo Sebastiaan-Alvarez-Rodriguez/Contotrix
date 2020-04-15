@@ -81,6 +81,34 @@ static void to_file(const char* const directory, const char* const name, const c
     free(buf);
 }
 
+static char* url_to_current(const char* const url) {
+    char* loc = strrchr(url, '/');
+    size_t urllen = strlen(url);
+    char* ans;
+
+    if (loc == NULL) { //should not be possible. Url is already used for downloading
+        fprintf(stderr, "Url to current error: no '/' in %s\n", url);
+        ans = NULL;
+    } else {
+        size_t foundloc = loc-url-1;
+        if (foundloc <= 6) { // url like: http://oof.com
+            ans = malloc(urllen+1);
+            strcpy(ans, url);
+        } else { // url like: http://oof.com/ or like https://oof.com/python.html
+            if (urllen-1 == foundloc) { // http://oof.com/
+                ans = malloc(urllen+1);
+                strcpy(ans, url);
+            } else { // https://oof.com/python.html
+                ans = malloc(foundloc+1+1);
+                memcpy(ans, url, foundloc+1);
+                ans[foundloc+1] = '\0';
+            }
+
+        }
+    }
+    return ans;
+}
+
 // Takes 2 urls as parameter, and a function. First url is the (sub)page of a domain you want to get links from
 // Second url is the base domain name (e.g. domain.test, if you want to get domain.test/subdir/test.html links)
 // The function argument must handle extraction of any requested data, and concatenation using '\n'
@@ -92,8 +120,9 @@ char* parse(const char* myhtmlpage, const char* myurl, const char* const directo
     const size_t len = strlen(html);
     to_file(directory, num, html, len);
 
+
     retrieve_t ret;
-    retrieve_create(&ret, myurl, "");
+    retrieve_create(&ret, myurl, url_to_current(myhtmlpage));
 
     haut_t parser;
     haut_init(&parser);

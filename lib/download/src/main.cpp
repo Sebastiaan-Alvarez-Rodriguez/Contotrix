@@ -19,7 +19,7 @@ static inline char separator() {
 }
 
 //Takes a list of urls, separated by '\n', and returns a set containing these urls in form std::string
-static auto segment(const char* const sentence) {
+static std::set<std::string> segment(const char* const sentence) {
     std::set<std::string> ret;
 
     std::stringstream ss(sentence);
@@ -30,7 +30,7 @@ static auto segment(const char* const sentence) {
     return ret;
 }
 
-static auto baseurl(const std::string url) {
+static std::string baseurl(const std::string url) {
     std::string base;
     std::string prefix = "";
     if (url.compare(0, 7, "http://") == 0) {
@@ -96,7 +96,7 @@ static void crawl(const std::string& start_url, const std::string& directory, un
             free(urllinks);
             // std::cout << "Found "<<linkset.size()<<" links"<<std::endl;
             for (const auto& url : linkset)
-                to_visit.push_front(url); //No need to check if url was visited already. fetch() function does that already
+                to_visit.push_back(url); //No need to check if url was visited already. fetch() function does that already
         }
     }
     file.close();

@@ -42,12 +42,13 @@ void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value) {
     if(haut_currentElementTag(p) == TAG_A && strfragment_icmp(key, "href") && value && value->data && value->size > 0) {
         if (value->data[0] == '#') //Self referencing url tag. Should skip
             return;
-        if (strncmp(value->data, "tel", 3) == 0)
+        if (value->size > 3 && strncmp(value->data, "tel", 3) == 0)
             return;
-        if (strncmp(value->data, "mailto", 6) == 0)
+        if (value->size > 6 && strncmp(value->data, "mailto", 6) == 0)
             return;
         size_t size = (size_t) value->size;
-        bool link_is_relative = value->data[0] == '/';
+        bool link_is_relative_base = value->data[0] == '/';
+        bool link_is_relative_current = value->size > 4 && strncmp(value->data, "http", 4) != 0 && strncmp(value->data, "www.", 4) != 0;
 
         int tmp = callback_contains_get_variable(value->data, size);
         if (tmp != -1)
@@ -55,7 +56,7 @@ void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value) {
         else if (value->data[size-1] == '/')
             size -= 1;
 
-        retrieve_add_url(ret, value->data, size, link_is_relative);
+        retrieve_add_url(ret, value->data, size, link_is_relative_base, link_is_relative_current);
     }
 }
 
