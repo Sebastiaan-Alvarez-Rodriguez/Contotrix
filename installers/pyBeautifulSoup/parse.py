@@ -20,7 +20,8 @@ def main():
     content = contentbytes.decode('utf-8')
 
     for x in range(repeats-1):
-        parsed = BeautifulSoup(content)
+        parsed = BeautifulSoup(content, features='html.parser')
+    parsed = BeautifulSoup(content, features='html.parser')
     print(str(len([x for x in parsed.find_all('a', href=True)])))
 
 if __name__ == '__main__':

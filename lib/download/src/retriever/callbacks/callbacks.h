@@ -10,7 +10,4 @@ size_t callback_write(char* buffer, size_t size, size_t nmemb, html_t* html);
 
 // Callback to collect links and store them in a link_t structure
 void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value);
-
-// Callback to collect title of html page
-void callback_inner_text(haut_t* p, strfragment_t* text);
 #endif

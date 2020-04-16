@@ -31,6 +31,9 @@ void retrieve_add_url(retrieve_t* ret, const char* url, size_t len, bool link_is
     } else if (link_is_relative_current) {
         str_create_from(&ret->links[ret->linksused], &ret->current_url);
         str_append(&ret->links[ret->linksused], url, len);
+    } else if (strncmp(url, "www.", 4) == 0) {
+        str_create_n(&ret->links[ret->linksused], "http://", 7);
+        str_append(&ret->links[ret->linksused], url, len);
     } else {
         str_create_n(&ret->links[ret->linksused], url, len);
     }

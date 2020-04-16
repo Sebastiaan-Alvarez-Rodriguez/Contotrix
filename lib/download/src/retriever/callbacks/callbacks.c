@@ -59,8 +59,3 @@ void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value) {
         retrieve_add_url(ret, value->data, size, link_is_relative_base, link_is_relative_current);
     }
 }
-
-void callback_inner_text(haut_t* p, strfragment_t* text) {
-    if (haut_currentElementTag(p) == TAG_TITLE)    
-        retrieve_change_title((retrieve_t*) p->userdata, text->data, text->size);
-}

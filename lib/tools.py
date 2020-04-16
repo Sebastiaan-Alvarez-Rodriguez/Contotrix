@@ -161,8 +161,6 @@ def download(args):
     print('Downloading ', end='')
     printc(str(amount), Color.PRP, end=' html pages\n')
 
-    print('Calling args: {0}'.format([fs.join(settings.root, 'lib', 'download','downloader'), splitted[0], settings.ddir, str(amount)]))
-
     try:
         out = subprocess.check_output([fs.join(settings.root, 'lib', 'download','downloader'), splitted[0], settings.ddir, str(amount)])
     except subprocess.CalledProcessError as e:
