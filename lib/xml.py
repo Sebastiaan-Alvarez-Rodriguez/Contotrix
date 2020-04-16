@@ -7,7 +7,6 @@ class Config(object):
         t = tree.parse(path)
         self.sections = dict()
         for child in t.getroot():
-            print('Child: {0}....{1}'.format(child, child.tag))
             self.sections[child.tag] = child
 
     def get(self, name):

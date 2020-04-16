@@ -9,7 +9,7 @@ if sys.version_info < (3,3):
 
 import lib.fs as fs
 import lib.tools as tools
-
+from lib.ui.color import printc, Color
 
 def help():
     print('''
@@ -35,7 +35,8 @@ Commands:
 
 def get_command():
     try:
-        return input("prompt> ").strip()
+        printc('prompt> ', Color.BLU, end='')
+        return input('').strip()
     except (KeyboardInterrupt, EOFError,) as e:
         print('\n')
         return 'q'

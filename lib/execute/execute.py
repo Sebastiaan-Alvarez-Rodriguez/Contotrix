@@ -16,7 +16,7 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
     print('Starting execution of ', end='')
     printc('{0} '.format(tool_name), Color.CAN, end='')
     print('on ', end='')
-    printc('{0} '.format(html_name), Color.YEL)
+    printc('{0} '.format(html_name), Color.YEL, end='(size={0}, bytes={1})\n'.format(html_size, html_size.to_bytes(4, byteorder='little', signed=False).hex()))
     start = time.time()
     output = subprocess.check_output(['/usr/bin/python3', 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], cwd=fs.abspathfile(__file__), input=cmd_input)
     end = time.time()
@@ -61,7 +61,7 @@ def ask_cores(max_cores=None):
         try:
             amount = int(answer)
         except Exception as e:
-            printerr('Could not convert "{0}" to a number'.format(amount))
+            printerr('Could not convert "{0}" to a number'.format(answer))
             continue
 
         if amount < 1:

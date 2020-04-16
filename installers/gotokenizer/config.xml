@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<conf>
+    <deps>
+        <d>go</d>
+        <d>go net/html package (install command: go get golang.org/x/net/html)</d>
+    </deps>
+</conf>

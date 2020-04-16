@@ -22,6 +22,7 @@ def install(names):
             return
         if not fs.isfile(fs.join(settings.idir,name,settings.cfile)):
             printerr('No config file available')
+            return
 
         xmlconf = xml.Config(fs.join(settings.idirname, name, settings.cfile))
         deps = xmlconf.get_dependencies()
