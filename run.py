@@ -10,23 +10,28 @@ if sys.version_info < (3,3):
 import lib.fs as fs
 import lib.tools as tools
 from lib.ui.color import printc, Color
+import lib.download.crawl.crawl as crawl
+import lib.download.commoncrawl.crawl as commoncrawl
 
 def help():
     print('''
 Commands:
     help
         Show this info
-    
+
     install <name(s)>
         Installs tool to use
 
     remove/deinstall/de-install <name(s)>
-    
+
     execute <repeats> <name(s)>
         Executes test on all given names of tools
-    
-    download <begin url> <amount>
+
+    crawl <begin url> <amount>
         Crawls the web, starting at <url>, for <amount> urls (or until no suitable urls remain)
+
+    commoncrawl <amount> <year> <month>
+        Downloads collected pages from the commoncrawl collective for the given year and month
 
     exit/quit
         Stops this program
@@ -59,8 +64,10 @@ def main():
             tools.remove(tail)
         elif head in ['exec', 'execute']:
             tools.execute(tail)
-        elif head in ['dl', 'download']:
-            tools.download(tail)
+        elif head == 'crawl':
+            crawl.crawl(tail)
+        elif head == 'commoncrawl':
+            commoncrawl.crawl(tail)
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()

@@ -10,13 +10,33 @@ import lib.fs as fs
 # Returns True if user responded positive, otherwise False
 def standard_yesno(question):
     while True:
-        choice = input(question+' [Y/n] ').upper()
-        if choice in ('Y', 'YES'):
+        choice = input(question+' [Y/n] ').lower()
+        if choice in ('y', 'yes'):
             return True
-        elif choice in ('N', 'NO'):
+        elif choice in ('n', 'no'):
             return False
         else:
-            print('Invalid option "{0}"'.format(choice))
+            printerr('Invalid option "{0}"'.format(choice))
+
+
+def standard_pick_one(question, options):
+    copy = list(options)
+    copy.sort(key=len)
+    minimals = [[x[0], x] for x in copy]
+    for x in minimals:
+        while minimals.count(x[0]) > 1:
+            if len(x[0]) == len(x[1]):
+                raise RuntimeError('Options "{0}" occurs multiple times!'.format(x[1]))
+            else:
+                x[0] += x[1][len(x[0])] #add next char of option
+
+    while True:
+        choice = input(question).lower()
+        if choice in options:
+            return choice
+        elif choice in [x[0] for x in minimals]:
+            return minimals[([x[0] for x in minimals].index(choice))][1]
+
 
 # ask user for a directory
 # must_exist determines whether given dir explicitly must or must not exist
@@ -30,7 +50,7 @@ def ask_directory(question, must_exist=True):
         choice = fs.abspath(choice)
         if must_exist:
             if not fs.isdir(choice):
-                print('Error: no such directory - "{0}"'.format(choice))
+                printerr('No such directory - "{0}"'.format(choice))
             else:
                 return choice
         else:
