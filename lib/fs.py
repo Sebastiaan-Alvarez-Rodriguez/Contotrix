@@ -32,7 +32,11 @@ def isdir(path, *args):
     return os.path.isdir(join(path,*args))
 
 def isemptydir(path, *args):
-    return len(ls(path, *args)) == 0
+    try:
+        next(ls(path, *args))
+        return False
+    except StopIteration as e:
+        return True
 
 def isfile(path, *args):
     return os.path.isfile(join(path,*args))
@@ -44,14 +48,18 @@ def join(directory, *args):
     return returnstring
 
 def ls(directory, *args):
-    return os.listdir(join(directory, *args))
+    with os.scandir(directory) as it:
+        for entry in it:
+            yield entry.name
 
 def lsonlydir(directory, full_paths=False):
-    contents = os.listdir(directory)
-    if not full_paths:
-        return [name for name in contents if isdir(directory, name)]
-    else:
-        return [join(directory, name) for name in contents if isdir(directory, name)]
+    with os.scandir(path) as it:
+        for entry in it:
+            if entry.is_dir():
+                if not full_paths:
+                    yield entry.name
+                else:
+                    yield [join(directory, entry.name)]
 
 def mkdir(path, exist_ok=False):
     os.makedirs(path, exist_ok=exist_ok)

@@ -49,7 +49,7 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
     else:
         print_failure(tool_name, html_name)
         links_found = 0
-        u_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = [0,0,0,0,0]
+        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = [0,0,0,0,0]
         errmsg = str(err).replace(',', '|')
     total_time = end - start
 
