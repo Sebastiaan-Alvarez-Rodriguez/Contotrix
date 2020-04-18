@@ -24,7 +24,7 @@ def install(names):
             printerr('No config file available')
             return
 
-        xmlconf = xml.Config(fs.join(settings.idirname, name, settings.cfile))
+        xmlconf = xml.Config(fs.join(settings.idir, name, settings.cfile))
         deps = xmlconf.get_dependencies()
         if len(deps) > 0:
             maxnamelen = max([len(x[0]) for x in deps])

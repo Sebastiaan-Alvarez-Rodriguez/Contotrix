@@ -16,7 +16,7 @@ import lib.download.commoncrawl.crawl as commoncrawl
 def help():
     print('''
 Commands:
-    help
+    h/help
         Show this info
 
     install <name(s)>
@@ -30,8 +30,10 @@ Commands:
     crawl <begin url> <amount>
         Crawls the web, starting at <url>, for <amount> urls (or until no suitable urls remain)
 
-    commoncrawl <amount> <year> <month>
-        Downloads collected pages from the commoncrawl collective for the given year and month
+    commoncrawl <amount> <year> <magicnumber>
+        Downloads <amount> collected pages from the commoncrawl collective for the given <year> and <magicnumber>
+        <magicnumber> is the number found in the list at https://commoncrawl.org/the-data/get-started/,
+        in the main list, as s3://commoncrawl/crawl-data/CC-MAIN-<year>-<magicnumber>.
 
     exit/quit
         Stops this program
@@ -51,12 +53,13 @@ def get_command():
 # allows user to install, execute and reconfigure, dependening on this state
 def main():
     command = get_command()
-
+    if command == 'w':
+        command = 'commoncrawl 10000 2020 16'
     while command.lower() not in ['q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
         head = head.lower()
-        if head == 'help':
+        if head in ['h', 'help']:
             help()
         elif head == 'install':
             tools.install(tail)

@@ -3,10 +3,19 @@
 
 #include "sha/sha.h"
 
+static inline char separator() {
+#ifdef _WIN32
+    return '\\';
+#else
+    return '/';
+#endif
+}
+
 void usage(const char* const progName) {
-    std::cout<< "Usage: " << progName << " <inputfile> <outputpath>\n"
+    std::cout<< "Usage: " << progName << " <inputfile> <outputpath> <at-most>\n"
     << "<inputfile>   Path to .warc file to take HTML content from\n"
     << "<outputpath>  Path to directory to store HTML content\n";
+    << "<at-most>     Maximum amount of pages to extract (0 means no limits)\n";
     exit(-1);
 }
 
@@ -28,15 +37,15 @@ inline bool startswith_ignorespace(const std::string& src, const std::string& pr
 }
 
 // Generates html files from warc file, returns amount of pages generated
-size_t generate(const std::string& inputfile, const std::string& outputpath) {
+size_t generate(const std::string& inputfile, const std::string& outputpath, size_t max) {
     std::ifstream file(inputfile, std::ios::in);
     if (!file.is_open())
         exit(1);
 
     size_t generated = 0;
     std::string line;
-    std::ofstream page_info(outputpath+"page_info.csv");
-    while(!file.eof()) {
+    std::ofstream page_info(outputpath+separator()+"page_info.csv");
+    while(!file.eof() && (generated < max || max == 0)) {
         while(std::getline(file, line) && line != "WARC-Type: response\r");
         while(std::getline(file, line) && !startswith(line, "WARC-Target-URI: "));
         if (line.size() <= 18) //only header name and 1 carriage return
@@ -51,7 +60,7 @@ size_t generate(const std::string& inputfile, const std::string& outputpath) {
                 continue;
         }
 
-        std::ofstream outfile(outputpath+shastring+".html", std::ios::out);
+        std::ofstream outfile(outputpath+separator()+shastring+".html", std::ios::out);
         while(std::getline(file, line) && !startswith(line, "WARC/1.0")) {
             outfile << line << '\n';
         }
@@ -64,8 +73,10 @@ size_t generate(const std::string& inputfile, const std::string& outputpath) {
 }
 
 int main(int argc, char const *argv[]) {
-    if (argc != 3)
+    if (argc != 4)
         usage(argv[0]);
-    std::cout << generate(argv[1], argv[2]);
+
+    size_t max = std::strtoull(argv[3], NULL, 0);
+    std::cout << generate(argv[1], argv[2], max);
     return 0;
 }

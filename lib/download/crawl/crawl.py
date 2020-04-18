@@ -1,11 +1,13 @@
 import subprocess
 
 import lib.fs as fs
-import lib.settings as settings
+from lib.settings import settings
+from lib.ui.menu import standard_yesno
 
 from lib.ui.color import printc, printerr, Color
 
 def crawl(args):
+    splitted = args.split(' ')
     if len(splitted) != 2:
         printerr('Need at least 2 arguments to execute: <begin url>, <amount>')
         return False, 0
