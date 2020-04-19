@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string>
@@ -17,26 +18,30 @@ static void search_for_links(GumboNode* node, size_t* amount_links) {
         search_for_links(static_cast<GumboNode*>(children->data[i]), amount_links);
 }
 
+size_t strtoull_precpp11(const char* const arg) {
+    std::stringstream sstream(arg);
+    size_t ans = 0;
+    sstream >> ans;
+    return ans;
+}
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cout << "Usage: "<<argv[0]<<"<repeats>\n";
+    if (argc != 3) {
+        std::cout << "Usage: "<<argv[0]<<" <htmlsize> <repeats>\n";
         exit(EXIT_FAILURE);
     }
 
-    size_t repeat;
+    size_t htmlsize, repeat;
     try {
-        repeat = std::stoull(argv[1]);
+        htmlsize = strtoull_precpp11(argv[1]);
+        repeat = strtoull_precpp11(argv[2]);
     } catch(...) {
-        std::cout << "Could not convert '"<<argv[1]<<"' to number\n";
+        std::cout << "Could not convert '"<<argv[1]<<"' or '"<<argv[2]<<"' to number\n";
         exit(EXIT_FAILURE);
     }
 
-    unsigned length;
-    std::cin.read((char*) &length, 4);
-    char* content = new char[length];
-    std::cin.read(content, length);
-
+    char* content = new char[htmlsize];
+    std::cin.read(content, htmlsize);
     for (size_t i = 0; i < repeat-1; ++i) {
         GumboOutput* output = gumbo_parse(content);
         gumbo_destroy_output(&kGumboDefaultOptions, output);

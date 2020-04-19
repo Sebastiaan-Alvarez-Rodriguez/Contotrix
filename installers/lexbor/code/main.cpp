@@ -9,30 +9,29 @@
 
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::cout << "Usage: "<<argv[0]<<" <repeats>\n";
+    if (argc != 3) {
+        std::cout << "Usage: "<<argv[0]<<" <htmlsize> <repeats>\n";
         exit(EXIT_FAILURE);
     }
 
-    size_t repeat;
+    size_t htmlsize, repeat;
     try {
-        repeat = std::stoull(argv[1]);
+        htmlsize = std::stoull(argv[1]);
+        repeat = std::stoull(argv[2]);
     } catch(...) {
-        std::cout << "Could not convert '"<<argv[1]<<"' to number\n";
+        std::cout << "Could not convert '"<<argv[1]<<"' or '"<<argv[2]<<"' to number\n";
         exit(EXIT_FAILURE);
     }
 
-    unsigned length;
-    std::cin.read((char*) &length, 4);
-    char* content = new char[length];
-    std::cin.read(content, length);
+    char* content = new char[htmlsize];
+    std::cin.read(content, htmlsize);
     for (size_t i = 0; i < repeat-1; ++i) {
         lxb_html_parser_t* parser = lxb_html_parser_create();
         lxb_status_t status = lxb_html_parser_init(parser);
         // if (status != LXB_STATUS_OK)
         //     return 1;
         
-        lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, length);
+        lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, htmlsize);
         // if (document == NULL)
         //     return 1;
         lxb_html_parser_destroy(parser);
@@ -44,7 +43,7 @@ int main(int argc, char** argv) {
     lxb_status_t status = lxb_html_parser_init(parser);
     // if (status != LXB_STATUS_OK)
     //     return 1;
-    lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, length);
+    lxb_html_document_t* document = lxb_html_parse(parser, (const lxb_char_t*) content, htmlsize);
     // if (document == NULL)
     //     return 2;
     lxb_html_parser_destroy(parser);

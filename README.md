@@ -16,6 +16,8 @@ In Python:
 In Java:
 TODO: Get Java parsers
  1. [hpar](https://github.com/zhijia/HPar)
+ 2. [mozilla wrapper (2008-old)](http://mozillaparser.sourceforge.net/)
+ 3. [perhaps raw firefox](https://www.google.com/search?client=ubuntu&channel=fs&q=firefox+html+parser&ie=utf-8&oe=utf-8)
 
 # Datasets
  Some large ones:

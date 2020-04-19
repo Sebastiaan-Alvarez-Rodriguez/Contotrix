@@ -13,8 +13,9 @@ import resource
 # print('repeats: {0}'.format(sys.argv[2]), file=sys.stderr)
 
 cmd = sys.argv[1].split(' ') # execrule
-cmd.append(sys.argv[2])      # repeats
-output = int(subprocess.check_output(cmd, env=os.environ.copy(), cwd=sys.argv[3], input=sys.stdin.buffer.read()))
+cmd.append(sys.argv[2])      # html size
+cmd.append(sys.argv[3])      # repeats
+output = int(subprocess.check_output(cmd, env=os.environ.copy(), cwd=sys.argv[4], input=sys.stdin.buffer.read()))
 usages = resource.getrusage(resource.RUSAGE_CHILDREN)
 # https://docs.python.org/3/library/resource.html
 fields = []

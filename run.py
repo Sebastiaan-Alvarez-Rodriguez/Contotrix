@@ -2,9 +2,9 @@
 import sys
 
 # Checks python version and exits if it is too low
-# Must be specified before any lib imports (using v3.3) are done
-if sys.version_info < (3,3):
-    print('I am sorry, but this script is for python3.3+ only!')
+# Must be specified before any lib imports (using v3.5) are done
+if sys.version_info < (3,5):
+    print('I am sorry, but this script is for python3.5+ only!')
     exit(1)
 
 import lib.fs as fs

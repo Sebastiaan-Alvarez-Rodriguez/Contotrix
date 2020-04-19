@@ -22,38 +22,39 @@ def print_failure(tool_name, html_name):
 
 # Function which handles the running of one parser call
 # Tasks should be an iterable of lists of form ([parser, htmlfilename, htmldata, repeats], ...)
-def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, logqueue):
+def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, logqueue, doprint=False):
     with open(html_content_path, 'rb') as file:
         html_content = file.read()
     html_size = len(html_content)
-    cmd_input = html_size.to_bytes(4, byteorder='little', signed=False)
-    cmd_input += html_content
-    print('Starting execution of ', end='')
-    printc('{0} '.format(tool_name), Color.CAN, end='')
-    print('on ', end='')
-    printc('{0} '.format(html_name), Color.YEL, end='(size={0}, bytes={1})\n'.format(html_size, html_size.to_bytes(4, byteorder='little', signed=False).hex()))
+
+    if doprint:
+        print('Starting execution of ', end='')
+        printc('{0} '.format(tool_name), Color.CAN, end='')
+        print('on ', end='')
+        printc('{0} '.format(html_name), Color.YEL, end='(size={0})\n'.format(html_size))
     start = time.time()
-    err = None
+    err = False
     try:
-        output = subprocess.check_output([sys.executable, 'statexec.py', ' '.join(tool_execrule), str(repeats), str(tool_cwd)], env=os.environ.copy(), cwd=fs.abspathfile(__file__), input=cmd_input)
+        output = subprocess.check_output([sys.executable, 'statexec.py', ' '.join(tool_execrule), str(html_size), str(repeats), str(tool_cwd)], env=os.environ.copy(), cwd=fs.abspathfile(__file__), input=html_content)
     except Exception as e:
-        err = e
+        err = True
     end = time.time()
 
-    if err == None:
-        print_success(tool_name, html_name)
-        splitted = output.decode('utf-8').strip().split(',')
-        links_found = int(splitted[0])
-        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = splitted[1:]
-        errmsg = ''
-    else:
-        print_failure(tool_name, html_name)
+    if err:
+        if doprint:
+            print_failure(tool_name, html_name)
         links_found = 0
         ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = [0,0,0,0,0]
         errmsg = str(err).replace(',', '|')
+    else:
+        if doprint:
+            print_success(tool_name, html_name)
+        splitted = output.decode('utf-8').strip().split(',')
+        links_found = int(splitted[0])
+        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = splitted[1:]
     total_time = end - start
 
-    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}'.format(
+    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}'.format(
         tool_name,
         html_name,
         html_size,
@@ -64,8 +65,7 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
         ru_maxrss,
         ru_minflt,
         ru_majflt,
-        err == None,
-        errmsg
+        err
     ))
 
 

@@ -13,30 +13,10 @@ void callback_link(haut_t* p, strfragment_t* key, strfragment_t* value) {
 
 
 // Code to run speed tests
-static void speed_test(size_t repeat) {
-    unsigned length;
-    scanf("%u", &length);
+static void speed_test(size_t length, size_t repeat) {
     char* content = malloc(length * sizeof(char));
-    // if (fgets(content, length+1, stdin) == NULL)
-    //     return false;
     read(STDIN_FILENO, content, length);
-    // char* head = content;
-    // size_t len = 1024;
-    // size_t used = 0;
-    // char current;
-    // while ((current = fgetc(head, len-used, stdin)) != EOF) {
-    //     if (used == len) {
-    //         char* tmp = realloc(content, len*2);
-    //         if (tmp == NULL) {
-    //             free(content);
-    //             return false;
-    //         }
-    //         content = tmp;
-    //         len *= 2;
-    //     }
-    //     content[used] = current;
-    //     ++used;
-    // }
+
 
     haut_t parser;
 
@@ -61,13 +41,13 @@ static void speed_test(size_t repeat) {
 
 // Simple function to display information in case someone did not provide the right amount of parameters
 static void usage(const char* name) {
-    printf("Usage: %s <repeat>\n\t<repeat> should specify repeat parse amount to test with\n\tNote that stdin should provide html content\n", name);
+    printf("Usage: %s <htmlsize> <repeat>\n", name);
     exit(-1);
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2)
+    if (argc != 3)
         usage(argv[0]);
-    speed_test(strtoul(argv[1], NULL, 0));
+    speed_test(strtoul(argv[1], NULL, 0), strtoul(argv[2], NULL, 0));
     return 0;
 }
