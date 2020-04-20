@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<conf>
+    <deps>
+        <d type="minimum">Java 8</d>
+    </deps>
+</conf>

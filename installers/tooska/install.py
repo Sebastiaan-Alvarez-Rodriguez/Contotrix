@@ -25,4 +25,13 @@ def install(location, fs):
         print('No make available: Please install GNU Make first!')
         return False
 
+    try:
+        subprocess.check_output(['make', 'fast'], cwd=location)
+    except subprocess.CalledProcessError as e:
+        print('Compilation error')
+        return False
+    except Exception as e:
+        print('No make available: Please install GNU Make first!')
+        return False
+
     return True
