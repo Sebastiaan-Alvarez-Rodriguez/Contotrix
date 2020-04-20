@@ -64,7 +64,7 @@ def crawl(args):
     fs.mkdir(dlpath)
     download('https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-{0}-{1}/warc.paths.gz'.format(year, magicnumber), manifest_dl_loc)
 
-    print('Downloading and extracting (at least) ', end='')
+    print('Downloading and extracting ', end='')
     printc(str(amount), Color.PRP, end=' html pages\n')
 
     extracted = 0

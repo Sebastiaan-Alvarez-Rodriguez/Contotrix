@@ -26,5 +26,9 @@ TODO: Get Java parsers
  3. Collect from [commoncrawl](https://commoncrawl.org/the-data/get-started/)
 <!-- https://commoncrawl.org/2020/04/march-april-2020-crawl-archive-now-available/ -->
 
+# Fix slowness
+ Maybe perform measurements not using resource package
+ 1. [make something yourself](https://medium.com/the-andela-way/machine-monitoring-tool-using-python-from-scratch-8d10411782fd)
+
 ## HTML parsers for Python
 [here](https://stackoverflow.com/questions/11709079/parsing-html-using-python)

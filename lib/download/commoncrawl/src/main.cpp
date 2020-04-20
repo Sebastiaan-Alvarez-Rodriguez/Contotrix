@@ -14,7 +14,7 @@ static inline char separator() {
 void usage(const char* const progName) {
     std::cout<< "Usage: " << progName << " <inputfile> <outputpath> <at-most>\n"
     << "<inputfile>   Path to .warc file to take HTML content from\n"
-    << "<outputpath>  Path to directory to store HTML content\n";
+    << "<outputpath>  Path to directory to store HTML content\n"
     << "<at-most>     Maximum amount of pages to extract (0 means no limits)\n";
     exit(-1);
 }
@@ -53,14 +53,23 @@ size_t generate(const std::string& inputfile, const std::string& outputpath, siz
         const std::string curr_url = line.substr(17, line.size()-17-1);
         const std::string shastring = sha::sha256(curr_url);
 
+        while( && !startswith(line, "Content-Type:"));
+        if (!line.substr(13).find("html"))
+            continue;
         while(std::getline(file, line) && !startswith_ignorespace(line, "<!DOCTYPE"));
+        std::string doctypestring = line;
+        bool skipsneeded = false;
         if (!line.find("<html")) {
+            skipsneeded = true;
             while(std::getline(file, line) && line == "\r");
             if (std::getline(file, line) && !startswith_ignorespace(line, "<html"))
                 continue;
         }
 
         std::ofstream outfile(outputpath+separator()+shastring+".html", std::ios::out);
+        outfile << doctypestring << '\n';
+        if (skipsneeded)
+            outfile << line << '\n';
         while(std::getline(file, line) && !startswith(line, "WARC/1.0")) {
             outfile << line << '\n';
         }

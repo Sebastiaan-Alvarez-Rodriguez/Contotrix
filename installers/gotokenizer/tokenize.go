@@ -4,7 +4,6 @@ package main
 import (
     "bufio"
     "bytes"
-    "encoding/binary"
     "fmt"
     "golang.org/x/net/html"
     "io"
@@ -12,7 +11,7 @@ import (
     "strconv"
 )
 
-func getHTML(htmlsize uint64) []byte {
+func getHTML(htmlsize int) []byte {
     in := bufio.NewReader(os.Stdin)
     buf := make([]byte, htmlsize)
     io.ReadFull(in, buf)
