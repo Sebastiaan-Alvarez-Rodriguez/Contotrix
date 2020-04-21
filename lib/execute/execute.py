@@ -5,6 +5,7 @@ import os
 import sys
 
 from lib.ui.color import printc, Color, printerr
+from lib.ui.menu import standard_yesno
 import lib.fs as fs
 from lib.execute.logger import Logger
 
@@ -22,7 +23,7 @@ def print_failure(tool_name, html_name):
 
 # Function which handles the running of one parser call
 # Tasks should be an iterable of lists of form ([parser, htmlfilename, htmldata, repeats], ...)
-def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, logqueue, doprint=False):
+def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, timeout, logqueue, doprint=False, surpress_stderr=False):
     with open(html_content_path, 'rb') as file:
         html_content = file.read()
     html_size = len(html_content)
@@ -32,29 +33,25 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
         printc('{0} '.format(tool_name), Color.CAN, end='')
         print('on ', end='')
         printc('{0} '.format(html_name), Color.YEL, end='(size={0})\n'.format(html_size))
+    
     start = time.time()
-    err = False
     try:
-        output = subprocess.check_output([sys.executable, 'statexec.py', ' '.join(tool_execrule), str(html_size), str(repeats), str(tool_cwd)], env=os.environ.copy(), cwd=fs.abspathfile(__file__), input=html_content)
+        full_cmd = [sys.executable, 'statexec.py', ' '.join(tool_execrule), str(html_size), str(repeats), str(tool_cwd), str(timeout), str(surpress_stderr)]
+        output = subprocess.check_output(full_cmd, env=os.environ.copy(), cwd=fs.abspathfile(__file__), input=html_content)
     except Exception as e:
-        err = True
+        print('The unexpected HAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPENED:\n'+str(e))
     end = time.time()
 
-    if err:
-        if doprint:
+    links_found,ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt,timeout_occured,error_occured = output.decode('utf-8').strip().split(',')
+    if doprint:
+        if timeout_occured or error_occured:
             print_failure(tool_name, html_name)
-        links_found = 0
-        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = [0,0,0,0,0]
-        errmsg = str(err).replace(',', '|')
-    else:
-        if doprint:
+        else:
             print_success(tool_name, html_name)
-        splitted = output.decode('utf-8').strip().split(',')
-        links_found = int(splitted[0])
-        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt = splitted[1:]
+        
     total_time = end - start
 
-    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}'.format(
+    logqueue.put('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}'.format(
         tool_name,
         html_name,
         html_size,
@@ -65,7 +62,8 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
         ru_maxrss,
         ru_minflt,
         ru_majflt,
-        err
+        error_occured,
+        timeout_occured
     ))
 
 
@@ -98,18 +96,35 @@ def ask_cores(max_cores=None):
             continue
         return amount
 
+def ask_timeout():
+    while True:
+        ans = input('Please specify a timeout (in seconds) for individual run: ')
+        try:
+            f = float(ans)
+        except Exception as e:
+            printerr('Could not convert "{0}" to float number'.format(ans))
+            continue
+        if f < 0.0:
+            printerr('Float value should be larger than 0.0')
+        elif f > 60.0:
+            printc('This timeout is quite high. The total runtime could be unconstrained', Color.YEL)
+            if standard_yesno('Are you certain you wish to use this timeout?'):
+                return f
+        else:
+            return f
 
-def argument_generator(data, repeats, tools, logqueue):
+def argument_generator(data, repeats, tools, timeout, logqueue):
     for item in [x for x in fs.ls(data) if x.endswith('.html')]:
         for tool in tools:
-            yield (tool[0], tool[1], tool[2], item, fs.join(data, item), repeats, logqueue,)
+            yield (tool[0], tool[1], tool[2], item, fs.join(data, item), repeats, timeout, logqueue,)
 
 
 # Data, repeats, [[name, location, execrule], ...], csvlocation
 def execute(data, repeats, tools, csvlocation):
     cores = ask_cores()
     logger = Logger(csvlocation)
-    args = [x for x in argument_generator(data, repeats, tools, logger.logqueue)]
+    timeout = ask_timeout()
+    args = [x for x in argument_generator(data, repeats, tools, timeout, logger.logqueue)]
     logger.start()
     with multiprocessing.Pool(processes=cores) as pool:
         pool.starmap(parallel_execute, args)
