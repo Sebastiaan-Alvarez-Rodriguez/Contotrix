@@ -12,11 +12,12 @@ import lib.tools as tools
 from lib.ui.color import printc, Color
 import lib.download.crawl.crawl as crawl
 import lib.download.commoncrawl.crawl as commoncrawl
+import lib.graphs.graphs as graphs
 
 def help():
     print('''
 Commands:
-    h/help
+    h(elp)
         Show this info
 
     install <name(s)>
@@ -34,6 +35,9 @@ Commands:
         Downloads <amount> collected pages from the commoncrawl collective for the given <year> and <magicnumber>
         <magicnumber> is the number found in the list at https://commoncrawl.org/the-data/get-started/,
         in the main list, as s3://commoncrawl/crawl-data/CC-MAIN-<year>-<magicnumber>.
+
+    graph(s)
+        Starts graph submodule (to generate graphs)
 
     exit/quit
         Stops this program
@@ -53,8 +57,6 @@ def get_command():
 # allows user to install, execute and reconfigure, dependening on this state
 def main():
     command = get_command()
-    if command == 'w':
-        command = 'commoncrawl 10000 2020 16'
     while command.lower() not in ['q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
@@ -71,6 +73,9 @@ def main():
             crawl.crawl(tail)
         elif head == 'commoncrawl':
             commoncrawl.crawl(tail)
+        elif head in ['graph', 'graphs']:
+            if graphs.submenu():
+                return
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()
