@@ -1,7 +1,7 @@
 class Dataline(object):
     """Data object for dataline"""
     def __init__(self,tool_name,html_name,html_size,total_time,links_found,
-        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt,errors,timout):
+        ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt,errors,timeout):
         self.tool_name = tool_name
         self.html_name = html_name
         self.html_size = int(html_size)
@@ -13,7 +13,7 @@ class Dataline(object):
         self.ru_minflt = int(ru_minflt)
         self.ru_majflt = int(ru_majflt)
         self.errors = errors == 'True'
-        self.timout = timout == 'True'
+        self.timeout = timeout == 'True'
 
     @staticmethod
     def init_from_line(line):
@@ -37,7 +37,7 @@ class Dataline(object):
             self.ru_minflt,
             self.ru_majflt,
             self.errors,
-            self.timout)
+            self.timeout)
 
     def __repr__(self):
         return str(self)

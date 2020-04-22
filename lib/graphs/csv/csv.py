@@ -9,6 +9,9 @@ class CSV(object):
         self.from_file(csvfile)
         self.lines.sort()
 
+    def get_nice_name(self):
+        return self.name[:-2] #-2 to remove '_b' or '_m'
+
     def is_benign_set(self):
         return self.benign
 
@@ -42,15 +45,11 @@ class CSV(object):
     def get_html_total_size(self):
         return sum([x.html_size for x in self.lines])
 
-    def get_apk_average_size(self):
-        return self.get_apk_total_size() / len(self.lines)
+    def get_html_average_size(self):
+        return self.get_html_total_size() / len(self.lines)
 
-    # TODO: Need better functions: if x benign->mistake if error
-    # def get_correct_total(self):
-    #     return len([x for x in self.lines if x.benign==x.errors and (not x.had_timeout) and x.had_succes])
-
-    # def get_incorrect_total(self):
-    #     return len([x for x in self.lines if x.benign and x.errors and (not x.had_timeout)])
+    def get_parsed_ok_total(self):
+        return len([x for x in self.lines if (not x.timout) and (not x.errors)])
 
     def get_problems_total(self):
         return len([x for x in self.lines if x.timout or x.errors])
@@ -58,6 +57,11 @@ class CSV(object):
     def from_file(self, csvfile):
         with open(csvfile, 'r') as csv:
             self.lines.extend([Dataline.init_from_line(x) for x in csv])
+
+    # def generator_parsed_ok(self):
+    #     for x in self.lines:
+    #         if (not x.timeout) and (not x.errors):
+    #             yield x
 
     def __str__(self):
         return self.name

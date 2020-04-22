@@ -8,6 +8,7 @@ from lib.settings import settings
 
 from lib.graphs.csv.csv import CSV
 import lib.graphs.implementations.barplot as barplot
+import lib.graphs.implementations.sizetime as sizetime
 
 
 def get_csvfiles(location):
@@ -27,9 +28,9 @@ Commands:
 
     all
         Generates all graphs
-    barplot [b(enign)/w(rong)]
-        Generates barplot graph, containing correct,incorrect,timeout,error bars
-    size_time
+    barplot [w(ell-formed)/i(ll-formed)]
+        Generates barplot graph, containing general statistics
+    size_time [w(ell-formed)/i(ll-formed)]
         Generates size vs time graph
 
     back/exit/quit
@@ -68,10 +69,12 @@ def submenu():
         # elif head == 'all':
         #     impl.generate_all(csvs)
         elif head == 'barplot':
-            barplot.gen(csvs, tail in ['b', 'benign'])
-        # elif head in ['size_time', 'sizetime', 'size time']:
-        #     impl.generate_sizetime(csvs)
+            barplot.gen(csvs, tail in ['w', 'wellformed', 'well-formed'])
+        elif head in ['size_time', 'sizetime', 'size time']:
+            sizetime.gen(csvs, tail in ['w', 'wellformed', 'well-formed'])
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()
     return command in ['q', 'quit', 'exit']
+ # TODO use vaex? (only for large plots?)
+ # TODO think of nice plot

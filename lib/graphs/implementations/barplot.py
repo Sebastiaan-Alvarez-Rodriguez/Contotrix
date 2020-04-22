@@ -2,20 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from lib.ui.color import printerr
-import lib.ui.menu as menu
 
 def gen(csvs, processing_benign):
-    # benign = menu.standard_yesno('Show benign stats (y) or malicious stats (n)?')
-    bars = []
-    names = []
     use_csvs = [x for x in csvs if x.is_benign_set()==processing_benign]
+    use_csvs.sort()
+
     if len(use_csvs) == 0:
-        printerr('There were no {0} csvs'.format('benign' if processing_benign else 'purposefully incorrect'))
+        printerr('There were no {0}-formed csvs'.format('well' if processing_benign else 'ill'))
         return
 
+    bars = []
+    names = []
     for x in use_csvs:
-        bars.append((x.get_correct_total(), x.get_incorrect_total(), x.get_had_timeout_total(), x.get_had_error_total(),))
-        names.append(x.name)
+        bars.append((x.get_parsed_ok_total(), x.get_had_timeout_total(), x.get_had_error_total(),))
+        names.append(x.get_nice_name())
+
+    tags = ['parsed', 'timeout', 'error']
 
     # width of the bars
     barWidth = 0.2
@@ -34,21 +36,21 @@ def gen(csvs, processing_benign):
 
     print([r + barWidth for r in range(len(bars[0]))])
 
-    plt.xticks([r + barWidth for r in range(len(bars[0]))], ['correct', 'incorrect', 'timeout', 'error'])
-    plt.title('Analysis outcome for tools on {0} {1} webpages'.format(csvs[0].get_amount(), 'benign' if benign else 'malicious'))
+    plt.xticks([r + barWidth for r in range(len(bars[0]))], tags)
+    plt.title('Analysis outcome for tools on {0} {1}-formed webpages'.format(csvs[0].get_amount(), 'well' if processing_benign else 'ill'))
     plt.ylabel('amount')
 
-    plt.legend(loc='upper {0}'.format('left' if benign else 'right'))
+    plt.legend(loc='upper right')
 
-    x_positions = [*r1, *r2, *r3, *r4]
+    x_positions = []
     for pos in bar_pos:
-        x_positions.append(*pos)
+        x_positions.extend(pos)
 
     y_positions = []
     for bar in bars:
-        y_positions.append(*bar)
+        y_positions.extend(bar)
 
     for x_pos, y_pos in zip(x_positions, y_positions):
-        plt.text(x = x_pos-0.05, y = y_pos+0.5, s = y_pos, size = 8)
+        plt.text(x = x_pos-0.05, y = y_pos+0.9, s = y_pos, size = 8)
 
     plt.show()
