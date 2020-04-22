@@ -21,13 +21,13 @@ def measure():
     cmd.append(sys.argv[2])      # html size
     cmd.append(sys.argv[3])      # repeats
     
-    surpress_stderr = sys.argv[6] == 'True'
+    print_stderr = sys.argv[6] == 'True'
     output = None
     try:
-        if surpress_stderr:
-            output = int(subprocess.check_output(cmd, env=os.environ.copy(), cwd=sys.argv[4], input=sys.stdin.buffer.read(), timeout=float(sys.argv[5]), stderr=subprocess.DEVNULL))
-        else:
+        if print_stderr:
             output = int(subprocess.check_output(cmd, env=os.environ.copy(), cwd=sys.argv[4], input=sys.stdin.buffer.read(), timeout=float(sys.argv[5])))
+        else:
+            output = int(subprocess.check_output(cmd, env=os.environ.copy(), cwd=sys.argv[4], input=sys.stdin.buffer.read(), timeout=float(sys.argv[5]), stderr=subprocess.DEVNULL))
     except subprocess.TimeoutExpired as e:
         print(','.join(['0' for x in range(6)])+',True,False')
         return
