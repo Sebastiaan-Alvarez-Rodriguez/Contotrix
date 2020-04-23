@@ -14,11 +14,11 @@ def gen(frames, processing_benign):
     bars = []
     names = []
     for x in use_frames:
-        item = (x.get_had_succes_total(), x.get_had_timeout_total(), x.get_had_error_total(),)
+        item = (x.get_soft_pagefaults_total(), x.get_hard_pagefaults_total(),)
         bars.append(item)
         names.append(x.get_nice_name())
 
-    tags = ['parsed', 'timeout', 'error']
+    tags = ['soft pagefaults', 'hard pagefaults']
 
     # width of the bars
     barWidth = 0.9/len(use_frames)
@@ -41,15 +41,16 @@ def gen(frames, processing_benign):
 
     plt.legend(loc='upper right')
 
-    # x_positions = []
-    # for pos in bar_pos:
-    #     x_positions.extend(pos)
+    x_positions = []
+    for pos in bar_pos:
+        x_positions.extend(pos)
 
-    # y_positions = []
-    # for bar in bars:
-    #     y_positions.extend(bar)
+    y_positions = []
+    for bar in bars:
+        y_positions.extend(bar)
 
-    # for x_pos, y_pos in zip(x_positions, y_positions):
-    #     plt.text(x = x_pos-0.05, y = y_pos+0.9, s = y_pos, size = 8)
+    for x_pos, y_pos in zip(x_positions, y_positions):
+        plt.text(x = x_pos-0.05, y = y_pos, s = y_pos, size = 8)
 
+    plt.yscale('log')
     plt.show()

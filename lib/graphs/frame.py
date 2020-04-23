@@ -4,6 +4,22 @@ from pyarrow.parquet import read_table
 import lib.fs as fs
 
 class Frame(object):
+    '''
+    Frame containing the data, initialized by providing a parquet file.
+    The parquet file is expected to contain the following fields:
+    toolname,
+    htmlname,
+    htmlsize,   (unsigned, in bytes)
+    totaltime,  (float, in seconds)
+    linksfound, (unsigned)
+    usertime,   (float)
+    systemtime, (float)
+    maxmem,     (unsigned, in bytes)
+    softpage,   (unsigned)
+    hardpage,   (unsigned)
+    error,      (boolean)
+    timeout     (boolean)
+    '''
     def __init__(self, pqfile):
         self.df = vaex.from_arrow_table(read_table(pqfile))
         self.name = fs.basename(pqfile)[:-8] #-4: remove '.parquet'
@@ -18,14 +34,19 @@ class Frame(object):
     def get_amount(self):
         return len(self.df)
 
+
     def get_exec_time_total(self):
         return self.df.sum(self.df.totaltime)
 
     def get_exec_time_average(self):
         return self.get_exec_time_total() / len(self.df)
 
+
     def get_had_succes_total(self):
         return self.df.length(selection=(not self.df.error) and (not self.df.timout))
+
+    def get_problems_total(self):
+        return self.df.length(selection=self.df.timeout or self.df.error)
 
 
     def get_had_timeout_total(self):
@@ -49,8 +70,13 @@ class Frame(object):
         return self.get_html_total_size() / len(self.df)
 
 
-    def get_problems_total(self):
-        return self.df.length(selection=self.df.timeout or self.df.error)
+    def get_soft_pagefaults_total(self):
+        return self.df.sum(self.df.softpage)
+    def get_hard_pagefaults_total(self):
+        return self.df.sum(self.df.hardpage)
+    def get_pagefaults_total(self):
+        return self.df.sum(self.get_soft_pagefaults_total(), self.get_hard_pagefaults_total())
+
 
     def __str__(self):
         return self.name

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import vaex
-from numpy import linspace
 
 import matplotlib.pyplot as plt
 from lib.ui.color import printerr
@@ -39,13 +38,12 @@ def gen(frames, processing_benign):
         printerr('There were no {0}-formed frames'.format('well' if processing_benign else 'ill'))
         return
 
-    # TODO: Try to generate s.t. we get an average speed per size
     for num, frame in enumerate(use_frames):
         subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection=(not frame.df.error) and (not frame.df.timeout))
         print(subgroup)
         
         plt.plot(subgroup, '-', label=frame.get_nice_name())
-    plt.title('Tool execution time on {0}-formed apks in dataset'.format('well' if processing_benign else 'ill'))
+    plt.title('Tool execution time vs webpage size on {0}-formed webpages'.format('well' if processing_benign else 'ill'))
     plt.xlabel('Webpage size (in bytes)')
     plt.ylabel('Execution times (in seconds)')
     # plt.minorticks_on()
