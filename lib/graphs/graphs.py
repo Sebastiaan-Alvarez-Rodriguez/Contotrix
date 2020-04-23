@@ -6,19 +6,19 @@ from lib.ui.menu import standard_yesno, ask_directory
 from lib.ui.color import Color, printc, printerr
 from lib.settings import settings
 
-from lib.graphs.csv.csv import CSV
+from lib.graphs.frame import Frame
 import lib.graphs.implementations.barplot as barplot
 import lib.graphs.implementations.sizetime as sizetime
 
 
-def get_csvfiles(location):
+def get_pqfiles(location):
     for x in fs.ls(location):
-        if fs.isfile(location, x) and x.endswith('.csv'):
+        if fs.isfile(location, x) and x.endswith('.parquet'):
             yield fs.join(location, x)
 
-def get_csvs():
-    for x in get_csvfiles(ask_directory('Where to get CSV files from?', must_exist=True)):
-        yield CSV(x)
+def get_frames(location):
+    for x in get_pqfiles(location):
+        yield Frame(x)
 
 def help():
     print('''
@@ -47,19 +47,23 @@ def get_command():
 
 # Main function of this submodule
 # Returns True if program should be exited, otherwise False
-def submenu():
-    printc('WARNING: ', Color.PRP, end='In this part, we read all data from all CSV files\n')
-    print('\tThis may cost you a lot of memory, dependening on amount of results.\n')
+def submenu(path=None):
+    if path == None or not fs.isdir(path):
+        if not fs.isdir(path):
+            printerr('Optional argument "path" does not provide a valid directory')
+        path = ask_directory('Where to get parquet files from?', must_exist=True)
 
-    csvs = list(get_csvs())
-    if len(csvs) == 0:
-        printerr('Found no sources (files with extension ".csv")')
+    frames = list(get_frames(path))
+    if len(frames) == 0:
+        printerr('Found no sources (files with extension ".parquet")')
         return
-    print('Found {0} sources'.format(len(csvs)))
+    print('Found {0} sources'.format(len(frames)))
 
-    csvs.sort()
+    frames.sort()
 
     command = get_command()
+    if command == '':
+        command = 'sizetime w'
     while command.lower() not in ['b', 'back','q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
@@ -69,12 +73,13 @@ def submenu():
         # elif head == 'all':
         #     impl.generate_all(csvs)
         elif head == 'barplot':
-            barplot.gen(csvs, tail in ['w', 'wellformed', 'well-formed'])
+            barplot.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
         elif head in ['size_time', 'sizetime', 'size time']:
-            sizetime.gen(csvs, tail in ['w', 'wellformed', 'well-formed'])
+            sizetime.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()
     return command in ['q', 'quit', 'exit']
  # TODO use vaex? (only for large plots?)
+ # https://vaex.readthedocs.io/en/latest/examples.html
  # TODO think of nice plot

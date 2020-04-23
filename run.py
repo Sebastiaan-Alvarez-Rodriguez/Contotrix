@@ -36,8 +36,8 @@ Commands:
         <magicnumber> is the number found in the list at https://commoncrawl.org/the-data/get-started/,
         in the main list, as s3://commoncrawl/crawl-data/CC-MAIN-<year>-<magicnumber>.
 
-    graph(s)
-        Starts graph submodule (to generate graphs)
+    graph(s) <optional: path>
+        Starts graph submodule. If path is given, loads in parquet files from given path
 
     exit/quit
         Stops this program
@@ -74,7 +74,7 @@ def main():
         elif head == 'commoncrawl':
             commoncrawl.crawl(tail)
         elif head in ['graph', 'graphs']:
-            if graphs.submenu():
+            if graphs.submenu(path=tail if tail != '' else None):
                 return
         else:
             print('Command "{0}" not recognized'.format(head))
