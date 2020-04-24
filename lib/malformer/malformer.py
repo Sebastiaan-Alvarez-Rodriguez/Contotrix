@@ -50,8 +50,6 @@ def submenu(command=None):
     if command == None:
         command = get_command()
 
-    if command == '':
-        command = 'minor 10'
     while command.lower() not in ['b', 'back','q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
@@ -67,6 +65,8 @@ def submenu(command=None):
                 timemem.gen(frames, x)
         elif head == 'minor':
             minor.gen(tail)
+        elif head == 'major':
+            major.gen(tail)
         else:
             print('Command "{0}" not recognized'.format(head))
         command = get_command()

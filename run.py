@@ -13,7 +13,7 @@ from lib.ui.color import printc, Color
 import lib.download.crawl.crawl as crawl
 import lib.download.commoncrawl.crawl as commoncrawl
 import lib.graphs.graphs as graphs
-
+import lib.malformer.malformer as malformer
 def help():
     print('''
 Commands:
@@ -76,6 +76,9 @@ def main():
             crawl.crawl(tail)
         elif head == 'commoncrawl':
             commoncrawl.crawl(tail)
+        elif head in ['malform', 'malformer']:
+            if malformer.submenu(command=tail if tail != '' else None):
+                return
         elif head in ['graph', 'graphs']:
             if graphs.submenu(path=tail if tail != '' else None):
                 return
