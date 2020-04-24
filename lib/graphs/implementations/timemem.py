@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import vaex
 from numpy import linspace
 

@@ -28,6 +28,9 @@ Commands:
     execute <repeats> <name(s)>
         Executes test on all given names of tools
 
+    convert <optional: path>
+        Convert a .csv file to a .parquet file (=pyarrow format)
+
     crawl <begin url> <amount>
         Crawls the web, starting at <url>, for <amount> urls (or until no suitable urls remain)
 
@@ -72,6 +75,8 @@ def main():
             tools.remove(tail)
         elif head in ['exec', 'execute']:
             tools.execute(tail)
+        elif head == 'crawl':
+            tools.convert_csv_to_pyarrow(path=tail if tail != '' else None)
         elif head == 'crawl':
             crawl.crawl(tail)
         elif head == 'commoncrawl':

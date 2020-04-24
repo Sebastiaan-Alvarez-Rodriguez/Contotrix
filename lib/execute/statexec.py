@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
     # Credits to Realz Slaw for suggesting this way of measuring os parameters: 
     # https://stackoverflow.com/users/586784/realz-slaw
     # Question: 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 from enum import Enum
 from lib.ui.color import printerr
@@ -62,8 +61,9 @@ def ask_directory(question, must_exist=True):
                 return choice
         print('')
 
+
 # ask user for a path (directory+file)
-def ask_path(question, exist_ok=False):
+def ask_path(question, must_exist=False, exist_ok=True, ask_override=True, directory=None, extension=None):
     while True:
         print(question)
         print('Paths may be absolute or relative to your working directory')
@@ -73,33 +73,21 @@ def ask_path(question, exist_ok=False):
         choice = fs.abspath(choice)
         if not fs.isdir(fs.dirname(choice)):
             printerr('No such directory "{0}"'.format(fs.dirname(choice)))
-        elif fs.isdir(choice):
-                printerr('"{0}" is a directory'.format(choice))
-        elif fs.isfile(choice):
-            if exist_ok:    
+        elif must_exist: #must exist
+            if fs.isfile(choice):
                 return choice
             else:
-                if standard_yesno('"{0}" exists, override?'.format(choice)):
-                    return choice
-        else:
-            return choice;
+                printerr('"{0}" is not a file'.format(choice))
+        elif (not must_exist) and exist_ok: #may exist, not has to exist
+            if ask_override and standard_yesno('"{0}" exists, override?'.format(choice)):
+                return choice
+        elif (not must_exist) and (not exist_ok): #must not exist
+            if fs.isfile(choice):
+                printerr('"{0}" already exists'.format(choice))
+            else:
+                return choice
         print('')
 
-# Ask for a filename
-# question is the question to be asked
-# directory is the directory where filename will be stored
-# extension is the extension you plan on appending to filename
-def ask_filename(question, directory, extension):
-    while True:
-        choice = input(question)
-        if len(choice) == 0:
-            print('Please provide a name')
-        elif '{0}{1}'.format(choice,extension) in fs.ls(directory):
-            if standard_yesno('{0} already exists. Override?'.format(choice)):
-                return choice
-        else:
-            return choice
-        print('')
 
 # Maps numbers (starting from 0 of course) to components for user select
 def make_optionsdict(objects):
@@ -108,11 +96,13 @@ def make_optionsdict(objects):
         returndict[number] = obj
     return returndict
 
+
 # Enum to represent menu choice made
 class MenuResults(Enum):
     CHOSEN=0
     EVERYTHING=1
     BACK=2
+
 
 # Give a list of choices and handles input
 # Returns selected options and type of return: Chosen, Back, Everything

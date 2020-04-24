@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import importlib
 import subprocess
 
@@ -10,6 +9,8 @@ from lib.ui.color import Color, printc, printerr
 from lib.settings import settings
 from lib.ui.menu import ask_path, standard_yesno
 import lib.execute.execute as exe
+import lib.util as util
+
 
 def install(names):
     if len(names) == 0:
@@ -110,7 +111,7 @@ def execute(args):
         tools.append([name, fs.join(settings.wdir,name), execrule])
 
 
-    csvloc = ask_path('We need a path to store CSV output.', exist_ok=False)
+    csvloc = ask_path('We need a path to store CSV output.', must_exist=False, exist_ok=True)
     if fs.isfile(csvloc):
         fs.rm(csvloc)
 
@@ -123,3 +124,14 @@ def execute(args):
 
     exe.execute(settings.ddir, repeats, tools, csvloc)
     printc('Execution successful!', Color.GRN)
+
+def convert_csv_to_pyarrow(path=None):
+    if path == None or (not fs.isfile(path)) or (not path.endswith('.csv')):
+        if path != None:
+            printerr('Given path "{0}" does not point to a .csv file')
+        path = ask_path('Please specify the location of the csv file', must_exist=True, extension='.csv')
+
+
+    if not util.has_module('pyarrow'):
+        printerr('Need to have module "pyarrow" installed. Install with "pip3 install pyarrow --user"')
+    util.convert_csv_to_pyarrow(path)

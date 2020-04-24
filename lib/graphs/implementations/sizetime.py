@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import vaex
 
 import matplotlib.pyplot as plt

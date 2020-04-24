@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import multiprocessing
 import threading
 
@@ -11,12 +9,14 @@ class Logger(object):
     # logger is stopped with stop(). Stop is automatically called
     # if the object gets out of scope and is destroyed
 
-    # Constructor
-    # logpath: path to logpath
-    def __init__(self, logpath):
+    def __init__(self, logpath, initial_lines=None):
         self.logpath = logpath
         self.logqueue = multiprocessing.Manager().Queue()
         self.logthread = threading.Thread(target=self.log)
+        if initial_lines != None:
+            with open(self.logpath, 'w') as log:
+                log.write(initial_lines)
+
 
     # Main log loop: Receives write requests from queue and handles them
     # While loop stops on receiving empty message

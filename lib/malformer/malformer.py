@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 import lib.fs as fs
 from lib.ui.menu import standard_yesno, ask_directory

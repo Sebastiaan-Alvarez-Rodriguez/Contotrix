@@ -8,6 +8,8 @@ from lib.ui.color import printc, Color, printerr
 from lib.ui.menu import standard_yesno
 import lib.fs as fs
 from lib.execute.logger import Logger
+from lib.util import has_module, convert_csv_to_pyarrow
+
 
 def print_success(tool_name, html_name):
     print('Execution of ', end='')
@@ -22,7 +24,6 @@ def print_failure(tool_name, html_name):
     printc('failed!', Color.RED)
 
 # Function which handles the running of one parser call
-# Tasks should be an iterable of lists of form ([parser, htmlfilename, htmldata, repeats], ...)
 def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, timeout, print_stderr, print_completions, logqueue):
     with open(html_content_path, 'rb') as file:
         html_content = file.read()
@@ -39,7 +40,7 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
         full_cmd = [sys.executable, 'statexec.py', ' '.join(tool_execrule), str(html_size), str(repeats), str(tool_cwd), str(timeout), str(print_stderr)]
         output = subprocess.check_output(full_cmd, env=os.environ.copy(), cwd=fs.abspathfile(__file__), input=html_content)
     except Exception as e:
-        print('The unexpected HAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPENED:\n'+str(e))
+        print('Unexpected (`impossible`) error occured:\n'+str(e))
     end = time.time()
 
     links_found,ru_utime,ru_stime,ru_maxrss,ru_minflt,ru_majflt,timeout_occured,error_occured = output.decode('utf-8').strip().split(',')
@@ -96,6 +97,7 @@ def ask_cores(max_cores=None):
             continue
         return amount
 
+# Ask for a timeout to use per parsing operation
 def ask_timeout():
     while True:
         ans = input('Please specify a timeout (in seconds) for individual run: ')
@@ -113,6 +115,15 @@ def ask_timeout():
         else:
             return f
 
+
+def ask_pyarrow():
+    if has_module('pyarrow'):
+        return standard_yesno('Convert csv to pyarrow format (.parquet) afterwards?\n(Note, you need to do this to use the generated data for the graphs submodule)\n')
+    else:
+        print('NOTE: You need "pyarrow" module to convert .csv to .parquet. The graph submodule works with .parquet files only!')
+        return False
+
+
 def argument_generator(data, repeats, tools, timeout, print_stderr, print_completions, logqueue):
     for item in [x for x in fs.ls(data) if x.endswith('.html')]:
         for tool in tools:
@@ -122,8 +133,11 @@ def argument_generator(data, repeats, tools, timeout, print_stderr, print_comple
 # Data, repeats, [[name, location, execrule], ...], csvlocation
 def execute(data, repeats, tools, csvlocation):
     cores = ask_cores()
-    logger = Logger(csvlocation)
+    csvheader='toolname,htmlname,htmlsize,totaltime,linksfound,usertime,systemtime,maxmemsoftpage,hardpage,error,timeout\n'
+    logger = Logger(csvlocation, initial_lines=csvheader)
     timeout = ask_timeout()
+
+    convert_pyarrow = ask_pyarrow()
     print_completions = standard_yesno('Print individual completions?')
     print_stderr = standard_yesno('Print stderr?')
     args = [x for x in argument_generator(data, repeats, tools, timeout, print_stderr, print_completions, logger.logqueue)]
@@ -131,3 +145,6 @@ def execute(data, repeats, tools, csvlocation):
     with multiprocessing.Pool(processes=cores) as pool:
         pool.starmap(parallel_execute, args)
     logger.stop()
+
+    if convert_pyarrow:
+        convert_csv_to_pyarrow()
