@@ -1,21 +1,33 @@
 import vaex
-
 import matplotlib.pyplot as plt
+
+import lib.fs as fs
+from lib.settings import settings
+
 from lib.ui.color import printerr
 
-def gen(frames, processing_benign):
-    use_frames = [x for x in frames if x.is_benign_set()==processing_benign and not x.is_unbound_set()]
+def gen(frames, processing_wellformed, print_large=False, show_output=False):
+    use_frames = [x for x in frames if x.is_wellformed_set()==processing_wellformed and not x.is_unbound_set()]
     use_frames.sort()
 
     if len(use_frames) == 0:
-        printerr('There were no {0}-formed frames'.format('well' if processing_benign else 'ill'))
+        printerr('There were no {0}-formed frames'.format('well' if processing_wellformed else 'ill'))
         return
+
+    if print_large:
+        font = {
+            'family' : 'DejaVu Sans',
+            'weight' : 'bold',
+            'size'   : 16
+        }
+        plt.rc('font', **font)
+    plt.rcParams["figure.figsize"] = (16,12) #dimensions in inches
 
     for num, frame in enumerate(use_frames):
         subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection=(not frame.df.error) and (not frame.df.timeout))        
         plt.plot(subgroup, '-', label=frame.get_nice_name())
 
-    plt.title('Tool execution time vs webpage size on {0}-formed webpages'.format('well' if processing_benign else 'ill'))
+    plt.title('Tool execution time vs webpage size on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
     plt.xlabel('Webpage size (in bytes)')
     plt.ylabel('Execution times (in seconds)')
     # plt.minorticks_on()
@@ -26,4 +38,13 @@ def gen(frames, processing_benign):
     # plt.xscale('log')
     plt.yscale('log')
 
-    plt.show()
+    if show_output:
+        plt.show()
+
+    fs.mkdir(settings.godir, exist_ok=True)
+    fig = plt.gcf()
+    fig.set_size_inches(16,12) #dimensions in inches
+    fig.savefig(fs.join(settings.godir, 'sizetime_large.pdf' if print_large else 'sizetime.pdf'), format='eps')
+
+    if print_large:
+        plt.rcdefaults()

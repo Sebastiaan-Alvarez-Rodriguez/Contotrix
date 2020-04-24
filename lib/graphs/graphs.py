@@ -33,8 +33,14 @@ else:
         h/help
             Show this info
 
+        toggle show/large <optional: on/off>
+            Toggles show/large value
+             * "show" determines whether we show generated figures
+             * "large" determines whether we create figures with larger font
+
         all
             Generates all graphs
+
         barplot [w(ell-formed)/i(ll-formed)]
             Generates barplot graph, containing general statistics
         pagefaults [w(ell-formed)/i(ll-formed)]
@@ -49,11 +55,15 @@ else:
             Returns to main menu
         exit/quit
             Exits program
-    ''')
 
-    def get_command():
+    Good-to-know type info:
+        1. ALL graphs are saved as vector image (.eps) in directory {0}
+    '''.format(settings.godir))
+
+
+    def get_command(print_large):
         try:
-            printc('graphs> ', Color.YEL, end='')
+            printc('graphs (large)> ' if print_large else 'graphs> ', Color.YEL, end='')
             return input('').strip()
         except (KeyboardInterrupt, EOFError,) as e:
             print('\n')
@@ -76,33 +86,55 @@ else:
 
         frames.sort()
 
-        command = get_command()
-        if command == '':
-            command = 'pagefaults w'
+        print_large = False
+        show_output = False
+
+
+        command = get_command(print_large)
+
+
         while command.lower() not in ['b', 'back','q', 'quit', 'exit']:
             split = command.split(' ', 1)
             head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
             head = head.lower()
             if head in ['h', 'help']:
                 help()
+            elif head == 'toggle':
+                subsplit = tail.split(' ', 1)
+                if subsplit[0] in ['s', 'show']:
+                    if len(subsplit) > 2:
+                        show_output = subsplit[1] == 'on'
+                    else:
+                        show_output = not show_output
+                    print('Set ', end='')
+                    printc('show ', Color.CAN, end='')
+                    print('to {0}'.format(show_output))
+
+                elif subsplit[0] in ['l', 'large']:
+                    if len(subsplit) > 2:
+                        print_large = subsplit[1] == 'on'
+                    else:
+                        print_large = not print_large
+                else:
+                    printerr('Please specify what to toggle: "show" or "large"')
             elif head == 'all':
                 for x in [True,False]:
-                    barplot.gen(frames, x)
-                    pagefaults.gen(x)
-                    sizetime.gen(frames, x)
-                    sizetimeunbound.gen(frames, x)
-                    timemem.gen(frames, x)
+                    barplot.gen(frames, x, print_large=print_large, show_output=show_output)
+                    pagefaults.gen(x, print_large=print_large, show_output=show_output)
+                    sizetime.gen(frames, x, print_large=print_large, show_output=show_output)
+                    sizetimeunbound.gen(frames, x, print_large=print_large, show_output=show_output)
+                    timemem.gen(frames, x, print_large=print_large, show_output=show_output)
             elif head == 'barplot':
-                barplot.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
+                barplot.gen(frames, tail in ['w', 'wellformed', 'well-formed'], print_large=print_large, show_output=show_output)
             elif head == 'pagefaults':
-                pagefaults.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
+                pagefaults.gen(frames, tail in ['w', 'wellformed', 'well-formed'], print_large=print_large, show_output=show_output)
             elif head in ['size_time', 'sizetime', 'size time']:
-                sizetime.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
+                sizetime.gen(frames, tail in ['w', 'wellformed', 'well-formed'], print_large=print_large, show_output=show_output)
             elif head in ['size_time_unbound', 'sizetimeunbound', 'size time unbound']:
-                sizetimeunbound.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
+                sizetimeunbound.gen(frames, tail in ['w', 'wellformed', 'well-formed'], print_large=print_large, show_output=show_output)
             elif head in ['time_mem', 'timemem', 'time mem']:
-                timemem.gen(frames, tail in ['w', 'wellformed', 'well-formed'])
+                timemem.gen(frames, tail in ['w', 'wellformed', 'well-formed'], print_large=print_large, show_output=show_output)
             else:
                 print('Command "{0}" not recognized'.format(head))
-            command = get_command()
+            command = get_command(print_large)
         return command in ['q', 'quit', 'exit']

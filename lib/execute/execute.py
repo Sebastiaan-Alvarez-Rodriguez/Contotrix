@@ -133,7 +133,7 @@ def argument_generator(data, repeats, tools, timeout, print_stderr, print_comple
 # Data, repeats, [[name, location, execrule], ...], csvlocation
 def execute(data, repeats, tools, csvlocation):
     cores = ask_cores()
-    csvheader='toolname,htmlname,htmlsize,totaltime,linksfound,usertime,systemtime,maxmemsoftpage,hardpage,error,timeout\n'
+    csvheader='toolname,htmlname,htmlsize,totaltime,linksfound,usertime,systemtime,maxmem,softpage,hardpage,error,timeout\n'
     logger = Logger(csvlocation, initial_lines=csvheader)
     timeout = ask_timeout()
 

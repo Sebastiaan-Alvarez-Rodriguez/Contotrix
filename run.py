@@ -75,7 +75,7 @@ def main():
             tools.remove(tail)
         elif head in ['exec', 'execute']:
             tools.execute(tail)
-        elif head == 'crawl':
+        elif head == 'convert':
             tools.convert_csv_to_pyarrow(path=tail if tail != '' else None)
         elif head == 'crawl':
             crawl.crawl(tail)

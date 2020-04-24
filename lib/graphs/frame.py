@@ -23,14 +23,14 @@ class Frame(object):
     def __init__(self, pqfile):
         self.df = vaex.from_arrow_table(read_table(pqfile))
         self.name = fs.basename(pqfile)[:-8] #-4: remove '.parquet'
-        self.benign = self.name.endswith('b')
+        self.wellformed = self.name.endswith('w')
         self.unbound = self.name.endswith('unbound')
 
     def get_nice_name(self):
-        return self.name[:-2] #-2 to remove '_b' or '_m'
+        return ' '.join(map(str, self.name.split('_')[:-1]))
 
-    def is_benign_set(self):
-        return self.benign
+    def is_wellformed_set(self):
+        return self.wellformed
 
     def is_unbound_set(self):
         return self.unbound
@@ -91,14 +91,14 @@ class Frame(object):
     def __eq__(self, other):
         if not isinstance(other, Frame):
             return NotImplemented
-        return self.name == other.name and self.is_benign_set() == other.is_benign_set()
+        return self.name == other.name and self.is_wellformed_set() == other.is_wellformed_set()
 
     def __lt__(self, other):
         if not isinstance(other, Frame):
             return NotImplemented
         
         if self.name == other.name:
-            return self.is_benign_set
+            return self.is_wellformed_set()
         return self.name < other.name
 
     def __hash__(self):
