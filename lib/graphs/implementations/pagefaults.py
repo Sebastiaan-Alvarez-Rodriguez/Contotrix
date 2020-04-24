@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from lib.ui.color import printerr
 
 def gen(frames, processing_benign):
-    use_frames = [x for x in frames if x.is_benign_set()==processing_benign]
+    use_frames = [x for x in frames if x.is_benign_set()==processing_benign and not x.is_unbound_set()]
     use_frames.sort()
 
     if len(use_frames) == 0:
@@ -50,7 +50,7 @@ def gen(frames, processing_benign):
         y_positions.extend(bar)
 
     for x_pos, y_pos in zip(x_positions, y_positions):
-        plt.text(x = x_pos-0.05, y = y_pos, s = y_pos, size = 8)
+        plt.text(x = x_pos*0.95, y = y_pos*1.05, s = y_pos, size = 8)
 
     plt.yscale('log')
     plt.show()

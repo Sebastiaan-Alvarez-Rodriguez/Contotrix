@@ -4,12 +4,13 @@ import vaex
 import matplotlib.pyplot as plt
 from lib.ui.color import printerr
 
+
 def gen(frames, processing_benign):
-    use_frames = [x for x in frames if x.is_benign_set()==processing_benign and not x.is_unbound_set()]
-    use_frames.sort()
+    use_frames = [x for x in frames if x.is_unbound_set()]
+    
 
     if len(use_frames) == 0:
-        printerr('There were no {0}-formed frames'.format('well' if processing_benign else 'ill'))
+        printerr('Could not find any unbound {0}-formed frames'.format('well' if processing_benign else 'ill'))
         return
 
     for num, frame in enumerate(use_frames):

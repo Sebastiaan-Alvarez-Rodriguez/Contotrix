@@ -24,12 +24,16 @@ class Frame(object):
         self.df = vaex.from_arrow_table(read_table(pqfile))
         self.name = fs.basename(pqfile)[:-8] #-4: remove '.parquet'
         self.benign = self.name.endswith('b')
+        self.unbound = self.name.endswith('unbound')
 
     def get_nice_name(self):
         return self.name[:-2] #-2 to remove '_b' or '_m'
 
     def is_benign_set(self):
         return self.benign
+
+    def is_unbound_set(self):
+        return self.unbound
 
     def get_amount(self):
         return len(self.df)

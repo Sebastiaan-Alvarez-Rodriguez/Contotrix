@@ -16,5 +16,7 @@ class Settings(object):
         self.efile = 'execute.py'
         self.wdir = fs.join(self.root,'installed')
         self.ddir = fs.join(self.root,'data')
+        self.mdir = fs.join(self.ddir,'malformed')
+
 global settings
 settings = Settings()

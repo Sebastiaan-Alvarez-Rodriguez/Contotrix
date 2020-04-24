@@ -36,6 +36,9 @@ Commands:
         <magicnumber> is the number found in the list at https://commoncrawl.org/the-data/get-started/,
         in the main list, as s3://commoncrawl/crawl-data/CC-MAIN-<year>-<magicnumber>.
 
+    malform(er) <optional: command>
+        Construct malformed html from existing html in the data directory
+
     graph(s) <optional: path>
         Starts graph submodule. If path is given, loads in parquet files from given path
 
