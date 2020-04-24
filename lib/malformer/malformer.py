@@ -9,7 +9,6 @@ import lib.malformer.minor as minor
 import lib.malformer.major as major
 
 
-
 def help():
     print('''
 Commands:
@@ -50,7 +49,7 @@ def submenu(command=None):
     if command == None:
         command = get_command()
 
-    while command.lower() not in ['b', 'back','q', 'quit', 'exit']:
+    while command.lower() not in ['b', 'back', 'q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)
         head = head.lower()

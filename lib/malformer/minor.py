@@ -37,13 +37,13 @@ def gen(tail):
                             has_alt = 'alt=' in line
                             if has_alt and has_src:
                                 if bool(random.getrandbits(1)):
-                                    line = re.sub('src=[\'"][a-zA-Z\\.+=0-9/\\,:;]*[\'"]', '',line)
+                                    line = re.sub('src=[\'"][^\'"]*[\'"]', '',line)
                                 else:
-                                    line = re.sub('alt=[\'"][a-zA-Z\\.+=0-9/\\,:;]*[\'"]', '',line)
+                                    line = re.sub('alt=[\'"][^\'"]*[\'"]', '',line)
                             elif has_src:
-                                line = re.sub('src=[\'"][a-zA-Z\\.+=0-9/\\,:;]*[\'"]', '',line)
+                                line = re.sub('src=[\'"][^\'"]*[\'"]', '',line)
                             elif has_alt:
-                                line = re.sub('alt=[\'"][a-zA-Z\\.+=0-9/\\,:;]*[\'"]', '',line)
+                                line = re.sub('alt=[\'"][^\'"]*[\'"]', '',line)
                         outfile.write(line)
             generated += 1
         except Exception as e:
