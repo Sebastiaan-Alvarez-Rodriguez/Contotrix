@@ -21,11 +21,17 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
             'size'   : 16
         }
         plt.rc('font', **font)
-    plt.rcParams["figure.figsize"] = (16,12) #dimensions in inches
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    fig.set_size_inches(9,6) #dimensions in inches
 
     for num, frame in enumerate(use_frames):
-        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection=(not frame.df.error) and (not frame.df.timeout))        
-        plt.plot(subgroup, '-', label=frame.get_nice_name())
+        frame.df.select(frame.df.error==1 and frame.df.timeout==1, mode='replace', name='sizetime')
+        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection='sizetime')
+        print('Working for frame '+frame.get_nice_name())
+        print(subgroup)
+        ax.plot(subgroup, '-', label=frame.get_nice_name())
 
     plt.title('Tool execution time vs webpage size on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
     plt.xlabel('Webpage size (in bytes)')
@@ -36,15 +42,17 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     # plt.axis([0, 35000000, 0, 7210])
 
     # plt.xscale('log')
-    plt.yscale('log')
+    ax.set_yscale('log')
 
     if show_output:
         plt.show()
 
     fs.mkdir(settings.godir, exist_ok=True)
-    fig = plt.gcf()
-    fig.set_size_inches(16,12) #dimensions in inches
-    fig.savefig(fs.join(settings.godir, 'sizetime_large.pdf' if print_large else 'sizetime.pdf'), format='eps')
+
+
+    fig.savefig(fs.join(settings.godir, 'sizetime_large.pdf' if print_large else 'sizetime.pdf'), format='pdf')
 
     if print_large:
         plt.rcdefaults()
+
+    plt.close()

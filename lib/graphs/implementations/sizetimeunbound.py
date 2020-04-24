@@ -25,23 +25,22 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    fig.set_size_inches(16,12) #dimensions in inches
-
+    fig.set_size_inches(9,6) #dimensions in inches
 
     for num, frame in enumerate(use_frames):
-        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection=(not frame.df.error) and (not frame.df.timeout))        
+        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection=frame.df.error==1 and frame.df.timeout==1)
         ax.plot(subgroup, 'o', label=frame.get_nice_name())
 
-    ax.set_title('Unbound tool execution time on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
-    ax.set_xlabel('Webpage size (in bytes)')
-    ax.set_ylabel('Execution times (in seconds)')
+    plt.title('Unbound tool execution time on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
+    plt.xlabel('Webpage size (in bytes)')
+    plt.ylabel('Execution times (in seconds)')
     # plt.minorticks_on()
     # plt.grid(b=True,which='both',axis='both')
-    ax.legend(loc='upper left')
+    plt.legend(loc='upper left')
     # plt.axis([0, 35000000, 0, 7210])
 
     # plt.xscale('log')
-    ax.set_yscale('log')
+    plt.yscale('log')
 
     if show_output:
         plt.show()
@@ -53,3 +52,5 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
     if print_large:
         plt.rcdefaults()
+
+    plt.close()

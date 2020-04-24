@@ -21,7 +21,11 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
             'size'   : 16
         }
         plt.rc('font', **font)
-    plt.rcParams["figure.figsize"] = (16,12) #dimensions in inches
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    fig.set_size_inches(9,6) #dimensions in inches
+
 
     bars = []
     names = []
@@ -70,9 +74,11 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
         plt.show()
 
     fs.mkdir(settings.godir, exist_ok=True)
-    fig = plt.gcf()
-    fig.set_size_inches(16,12) #dimensions in inches
-    fig.savefig(fs.join(settings.godir, 'pagefaults_large.pdf' if print_large else 'pagefaults.pdf'), format='eps')
+
+
+    fig.savefig(fs.join(settings.godir, 'pagefaults_large.pdf' if print_large else 'pagefaults.pdf'), format='pdf')
 
     if print_large:
         plt.rcdefaults()
+
+    plt.close()

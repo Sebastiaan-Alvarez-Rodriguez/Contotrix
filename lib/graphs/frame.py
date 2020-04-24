@@ -17,8 +17,8 @@ class Frame(object):
     maxmem,     (unsigned, in bytes)
     softpage,   (unsigned)
     hardpage,   (unsigned)
-    error,      (boolean)
-    timeout     (boolean)
+    error,      (boolean: WARNING -> Parquet stores True as 0 and False as 1)
+    timeout     (boolean: WARNING -> Parquet stores True as 0 and False as 1)
     '''
     def __init__(self, pqfile):
         self.df = vaex.from_arrow_table(read_table(pqfile))
@@ -47,24 +47,23 @@ class Frame(object):
 
 
     def get_had_succes_total(self):
-        return self.df.length(selection=(not self.df.error) and (not self.df.timout))
+        return len(self.df[self.df.error+self.df.timeout==2])
 
     def get_problems_total(self):
-        return self.df.length(selection=self.df.timeout or self.df.error)
-
+        return len(self.df[self.df.error+self.df.timeout<=1])
 
     def get_had_timeout_total(self):
-        return self.df.length(selection=self.df.timeout)
+        return len(self.get_lines_timeout())
 
     def get_lines_timeout(self):
-        return self.df[df.timeout]
+        return self.df[self.df.timeout==0]
 
 
     def get_had_error_total(self):
-        return self.df.length(selection=self.df.error)
+        return len(self.get_lines_error())
 
     def get_lines_error(self):
-        return self.df[df.error]
+        return self.df[self.df.error==0]
 
 
     def get_html_total_size(self):

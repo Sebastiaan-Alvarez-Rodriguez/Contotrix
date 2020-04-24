@@ -20,7 +20,11 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
             'size'   : 16
         }
         plt.rc('font', **font)
-    plt.rcParams["figure.figsize"] = (16,12) #dimensions in inches
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    fig.set_size_inches(9,6) #dimensions in inches
+
 
     bars = []
     names = []
@@ -52,24 +56,24 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
     plt.legend(loc='upper right')
 
-    # x_positions = []
-    # for pos in bar_pos:
-    #     x_positions.extend(pos)
+    x_positions = []
+    for pos in bar_pos:
+        x_positions.extend(pos)
 
-    # y_positions = []
-    # for bar in bars:
-    #     y_positions.extend(bar)
+    y_positions = []
+    for bar in bars:
+        y_positions.extend(bar)
 
-    # for x_pos, y_pos in zip(x_positions, y_positions):
-    #     plt.text(x = x_pos-0.05, y = y_pos+0.9, s = y_pos, size = 8)
+    for x_pos, y_pos in zip(x_positions, y_positions):
+        plt.text(x = x_pos-0.05, y = y_pos+0.9, s = y_pos, size = 8)
 
     if show_output:
         plt.show()
 
     fs.mkdir(settings.godir, exist_ok=True)
-    fig = plt.gcf()
-    fig.set_size_inches(16,12) #dimensions in inches
-    fig.savefig(fs.join(settings.godir, 'barplot_large.pdf' if print_large else 'barplot.pdf'), format='eps')
+
+
+    fig.savefig(fs.join(settings.godir, 'barplot_large.pdf' if print_large else 'barplot.pdf'), format='pdf')
 
     if print_large:
         plt.rcdefaults()

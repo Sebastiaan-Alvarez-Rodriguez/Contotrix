@@ -21,11 +21,14 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
             'size'   : 16
         }
         plt.rc('font', **font)
-    plt.rcParams["figure.figsize"] = (16,12) #dimensions in inches
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    fig.set_size_inches(9,6) #dimensions in inches
 
 
     for num, frame in enumerate(use_frames):
-        subgroup = frame.df.mean(frame.df.maxmem, binby=frame.df.totaltime, limits=[0,10],shape=1024, selection=(not frame.df.error) and (not frame.df.timeout))
+        subgroup = frame.df.mean(frame.df.maxmem, binby=frame.df.totaltime, limits=[0,10],shape=1024, selection=frame.df.error==1 and frame.df.timeout==1)
         plt.plot(linspace(0,10,1024),subgroup, '-', label=frame.get_nice_name())
     plt.title('Tool execution time vs max memory usage on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
     plt.xlabel('Execution times (in seconds)')
@@ -42,9 +45,9 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
         plt.show()
 
     fs.mkdir(settings.godir, exist_ok=True)
-    fig = plt.gcf()
-    fig.set_size_inches(16,12) #dimensions in inches
-    fig.savefig(fs.join(settings.godir, 'timemem_large.pdf' if print_large else 'timemem.pdf'), format='eps')
+
+
+    fig.savefig(fs.join(settings.godir, 'timemem_large.pdf' if print_large else 'timemem.pdf'), format='pdf')
 
     if print_large:
         plt.rcdefaults()
