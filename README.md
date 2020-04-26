@@ -1,34 +1,52 @@
-# Current ideas
- 1. DONE - Get code of parsers to work
- 2. DONE - Use python framework to run code using subprocesses
- 3. DONE - Use psutil.memory_percent() for avg mem usage and psutil.cpu_percent() for avg cpu usage . See [here](https://psutil.readthedocs.io/en/latest/)
+# Contotrix
+Contotrix is a fast, OS independent framework to efficiently compare different HTML parsers,
+using multiprcessing, resource measuring, and large-scale result analysis.
 
-# Currently working
-In C:
- 1. Haut
- 2. Gumbo
- 3. Lexbor
- 4. Tooska (but gives errors/warnings for no reason)
-In Python:
- 1. html.parser (pyTHMLParser)
- 2. beautifulsoup (pyBeautifulSoup)
- 3. lxml (pylxml)
-In Java:
-TODO: Get Java parsers
- 1. [hpar](https://github.com/zhijia/HPar)
- 2. [mozilla wrapper (2008-old)](http://mozillaparser.sourceforge.net/)
- 3. [perhaps raw firefox](https://www.google.com/search?client=ubuntu&channel=fs&q=firefox+html+parser&ie=utf-8&oe=utf-8)
+## Installing
+To be able to run all parts of this framework, the follwing needs to be installed
+ 1. Python 3.6 or greater
+ 2. Python's matplotlib library
+ 3. Python vaex library for result analysis
 
-# Datasets
- Some large ones:
- 1. [Mine for more datasets](https://www.researchgate.net/post/Where_can_I_find_the_web_pages_dataset_for_information_extraction)
- 2. Go collecting myself? I could take from multiple sources, storing by doing md5/sha2 to prevent collisions
- 3. Collect from [commoncrawl](https://commoncrawl.org/the-data/get-started/)
-<!-- https://commoncrawl.org/2020/04/march-april-2020-crawl-archive-now-available/ -->
+## Execution
+Go to the top directory of this framework and type
+```bash
+python3 run.py
+```
 
-# Fix slowness
- Maybe perform measurements not using resource package
- 1. [make something yourself](https://medium.com/the-andela-way/machine-monitoring-tool-using-python-from-scratch-8d10411782fd)
+## Usage
+After starting this framework, you should get a commandline tool.
+At any point, type 'h' or 'help' to get a list of commands you can use.  
 
-## HTML parsers for Python
-[here](https://stackoverflow.com/questions/11709079/parsing-html-using-python)
+To install a parsers, use `install <name(s)>`.
+ > Note: Parsers can have additional requirements, which are made clear when trying to install these parsers. Pay attention during installation to avoid runtime crashes
+
+To download a dataset, use either the `commoncrawl` or `crawl` command.
+The `commoncrawl` command downloads crawled webpages from the [CommonCrawl](https://commoncrawl.org/) project.
+The `crawl` command crawls the web on its own, given a starting position.
+
+
+To execute parsers, use `exec <repeats> <name(s)>`.
+You will be asked about timeouts, how many cores to run on, etcetera.
+Timeouts are important, because some parsers may take several hours to parse a seemingly simple HTML page in some conditions, and you might not want to wait on this.
+
+To generate graphs, type `graph(s)` to go to the graphs-submodule.
+This submodule is responsible for generating all kinds of interesting data from generated output.
+
+To generate incorrect HTML, type `malform(er)` to go to the malformer-submodule.
+This submodule inserts minor and major errors in given HTML pages in a random fashion.
+
+## Adding support for a parser
+Supporting a parser is very simple.
+There needs to be a directory in installers folder.
+The name of the directory is the name of your parser.
+It cannot and should not contain spaces, '/', '\' (for platform independence).
+In the directory should be at least 3 files:
+ 1. `install.py`: File with a function `install(location, fs)`. Function is called when user wants to install your tool to given `location`. `fs` is an object to interact with the filesystem. see `lib/fs.py`.
+ It should return `True` on succesful install, otherwise `False`
+ 2. `execute.py`: File with a function `execute(location, fs)`. Function is called when user wants to execute your tool, which is installed at `location`. It should return a list, containing the entire call of your function. See `installers/goparser` for a simple example.
+ 3. `config.xml`: File containing a `<deps>` section. In this section, use `<d>My installation requirement v1.0</d>` to denote installation requirements. These are displayed to the user on installation
+
+What you further have in installer directory is not important and up to you.
+It should likely contain source code for the parser.
+See `installers/goparser` for a simple example.

@@ -2,6 +2,11 @@ import os
 import shutil
 import sys
 
+'''
+This file contains many functions to help interact with the filesystem
+in an OS independent manner
+'''
+
 def abspath(path):
     return os.path.abspath(path)
 

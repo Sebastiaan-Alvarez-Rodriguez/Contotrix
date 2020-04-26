@@ -9,6 +9,11 @@ from lib.ui.menu import standard_yesno
 
 from lib.ui.color import printc, printerr, Color
 
+'''
+Submodule to handle downloading, extracting, analysis of CommonCrawl's WARC files
+'''
+
+# Downloads file at url, and stores output
 def download(url, output):
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
@@ -17,12 +22,14 @@ def download(url, output):
                 if chunk:
                     f.write(chunk)
 
+# Extracts gzip inp(ut) files to outp(ut) path.
+# Strangs naming needed because 'input' is a reserved function name
 def gz_extract(inp, outp):
     with gzip.open(inp, 'rb') as f_in:
         with open(outp, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
 
-
+# Main function, extracting
 def crawl(args):
     splitted = args.split(' ')
     if len(splitted) != 3:

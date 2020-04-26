@@ -2,13 +2,16 @@ import multiprocessing
 import threading
 
 class Logger(object):
-    """Object to handle asynchronous file write requests"""
-    # After constructing a Logger object, put strings
-    # in the logger.logqueue, which will be written to specified file
-    # when logger is started with start(), until the point where
-    # logger is stopped with stop(). Stop is automatically called
-    # if the object gets out of scope and is destroyed
+    '''
+    Object to handle asynchronous file write requests
+    After constructing a Logger object, put strings
+    in the logger.logqueue, which will be written to specified file
+    when logger is started with start(), until the point where
+    logger is stopped with stop(). Stop is automatically called
+    if the object gets out of scope and is destroyed
+    '''
 
+    # Constructor, needing path to output file, and any initial lines to write
     def __init__(self, logpath, initial_lines=None):
         self.logpath = logpath
         self.logqueue = multiprocessing.Manager().Queue()

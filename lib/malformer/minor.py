@@ -6,12 +6,20 @@ import lib.fs as fs
 from lib.settings import settings
 from lib.ui.color import printerr, printc, Color
 
+'''
+Generate major errors in HTML code,
+such as removing <!DOCTYPE html> identification tag,
+and removing src and alt attributes of images.
+'''
+
+# Gets HTML files
 def generate_html_files(location):
     with os.scandir(location) as it:
         for entry in it:
             if entry.is_file() and entry.name.endswith('.html'):
                 yield entry
 
+# Main function
 def gen(tail):
     fs.mkdir(settings.mdir, exist_ok=True)
 

@@ -20,12 +20,18 @@ class Frame(object):
     error,      (boolean: WARNING -> Parquet stores True as 0 and False as 1)
     timeout     (boolean: WARNING -> Parquet stores True as 0 and False as 1)
     '''
+
+    # The parquet file to read from.
+    # If its name is like 'a_w.parquet', we assume it is well-formed (_w)
+    # If its name is like 'a_m.parquet', we assume it is malformed (_m)
+    # If its name is like 'a_unbound.parquet', we assume it is unbound (_unbound)
     def __init__(self, pqfile):
         self.df = vaex.from_arrow_table(read_table(pqfile))
         self.name = fs.basename(pqfile)[:-8] #-4: remove '.parquet'
         self.wellformed = self.name.endswith('w')
         self.unbound = self.name.endswith('unbound')
 
+    # Returns name with '_' replaced by ' ', and without _w, _m, or _unbound extension
     def get_nice_name(self):
         return ' '.join(map(str, self.name.split('_')[:-1]))
 

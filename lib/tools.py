@@ -11,7 +11,12 @@ from lib.ui.menu import ask_path, standard_yesno
 import lib.execute.execute as exe
 import lib.util as util
 
+'''
+Functions in this file mostly handle user interaction 
+and checking argument validity.
+'''
 
+# Install tools. Pass a list of names as given in the 'installers' folder
 def install(names):
     if len(names) == 0:
         printerr('No installer name provided')
@@ -56,7 +61,7 @@ def install(names):
         else:
             printerr('Installation of {0} failed.'.format(name))
 
-
+# Removes installed tools
 def remove(names):
     if len(names) == 0:
         printerr('No installer name provided')
@@ -70,6 +75,7 @@ def remove(names):
         printc('Success!', Color.GRN)
 
 
+# Execute given HTML parsers for the given amount of times
 def execute(args):
     splitted = args.split(' ')
     if len(splitted) < 2:
@@ -125,6 +131,8 @@ def execute(args):
     exe.execute(settings.ddir, repeats, tools, csvloc)
     printc('Execution successful!', Color.GRN)
 
+
+# Converts CSV files to a more compact Apache Arrow format
 def convert_csv_to_pyarrow(path=None):
     if path == None or (not fs.isfile(path)) or (not path.endswith('.csv')):
         if path != None:

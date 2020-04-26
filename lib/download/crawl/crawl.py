@@ -6,6 +6,11 @@ from lib.ui.menu import standard_yesno
 
 from lib.ui.color import printc, printerr, Color
 
+'''
+Crawls files from the web, starting at some location
+'''
+
+# Main function
 def crawl(args):
     splitted = args.split(' ')
     if len(splitted) != 2:

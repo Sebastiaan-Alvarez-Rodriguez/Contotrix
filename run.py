@@ -2,9 +2,9 @@
 import sys
 
 # Checks python version and exits if it is too low
-# Must be specified before any lib imports (using v3.5) are done
-if sys.version_info < (3,5):
-    print('I am sorry, but this script is for python3.5+ only!')
+# Must be specified before any lib imports (using v3.6) are done
+if sys.version_info < (3,6):
+    print('I am sorry, but this script is for python3.6+ only!')
     exit(1)
 
 import lib.fs as fs
@@ -49,7 +49,7 @@ Commands:
         Stops this program
 ''')
 
-
+# Get a command from user
 def get_command():
     try:
         printc('prompt> ', Color.BLU, end='')
@@ -59,10 +59,12 @@ def get_command():
         return 'q'
 
 
-# Main function of this framework. Prints current installation state and
-# allows user to install, execute and reconfigure, dependening on this state
+# Main function of this framework. Accepts main commands from user 
+# and forwards calls to relevant submodules
 def main():
     command = get_command()
+    if command == '':
+        command = 'graph output'
     while command.lower() not in ['q', 'quit', 'exit']:
         split = command.split(' ', 1)
         head, tail = (split[0], split[1],) if len(split) == 2 else (split[0], '',)

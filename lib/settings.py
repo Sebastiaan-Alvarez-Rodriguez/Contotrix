@@ -1,7 +1,9 @@
 import sys
 import lib.fs as fs
 
-# The purpose of this file is to set some global variables that are used at many places
+'''
+The purpose of this file is to set some global variables that are used at many places
+'''
 
 class Settings(object):    
     def __init__(self):

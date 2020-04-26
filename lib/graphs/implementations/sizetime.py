@@ -6,6 +6,11 @@ from lib.settings import settings
 
 from lib.ui.color import printerr
 
+'''
+Generate size vs time plot
+'''
+
+# Main function
 def gen(frames, processing_wellformed, print_large=False, show_output=False):
     use_frames = [x for x in frames if x.is_wellformed_set()==processing_wellformed and not x.is_unbound_set()]
     use_frames.sort()
@@ -14,11 +19,13 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
         printerr('There were no {0}-formed frames'.format('well' if processing_wellformed else 'ill'))
         return
 
+    fontsize = 8
     if print_large:
+        fontsize = 16
         font = {
             'family' : 'DejaVu Sans',
             'weight' : 'bold',
-            'size'   : 16
+            'size'   : fontsize
         }
         plt.rc('font', **font)
 
@@ -28,12 +35,12 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
     for num, frame in enumerate(use_frames):
         frame.df.select(frame.df.error==1 and frame.df.timeout==1, mode='replace', name='sizetime')
-        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=1024, selection='sizetime')
-        print('Working for frame '+frame.get_nice_name())
-        print(subgroup)
-        ax.plot(subgroup, '-', label=frame.get_nice_name())
+        subgroup = frame.df.mean(frame.df.totaltime, binby=frame.df.htmlsize, shape=256, selection='sizetime')
+        sizes = frame.df.first(frame.df.htmlsize, frame.df.htmlsize, binby=frame.df.htmlsize, shape=256, selection='sizetime')
+        print(f'{num}: {frame.get_nice_name()}')
+        ax.plot(sizes, subgroup, '-', label=str(num))
 
-    plt.title('Tool execution time vs webpage size on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
+    plt.title('Tool parse time vs html size on {0}-formed pages'.format('well' if processing_wellformed else 'ill'))
     plt.xlabel('Webpage size (in bytes)')
     plt.ylabel('Execution times (in seconds)')
     # plt.minorticks_on()
@@ -42,7 +49,9 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     # plt.axis([0, 35000000, 0, 7210])
 
     # plt.xscale('log')
-    ax.set_yscale('log')
+    # ax.set_yscale('log')
+
+    fig.tight_layout()
 
     if show_output:
         plt.show()

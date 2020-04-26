@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 
 import lib.fs as fs
 from lib.settings import settings
-
 from lib.ui.color import printerr
 
 '''
-Generate pagefaults barplot and table, containing soft and hard pagefaults
+Generate memory barplot, containing avg max memory footprint in MB
 '''
 
 # Main function
@@ -28,7 +27,7 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
             'size'   : fontsize
         }
         plt.rc('font', **font)
-    
+
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     fig.set_size_inches(9,6) #dimensions in inches
@@ -37,11 +36,14 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     bars = []
     names = []
     for x in use_frames:
-        item = (x.get_soft_pagefaults_total(), x.get_hard_pagefaults_total(),)
+        avg_mem = x.df.mean(x.df.maxmem)
+        avg_mem = avg_mem / 1024
+
+        item = (np.round(avg_mem, 2),)
         bars.append(item)
         names.append(x.get_nice_name())
 
-    tags = ['soft pagefaults', 'hard pagefaults']
+    tags = ['Max memory usage (MB)']
 
     # width of the bars
     barWidth = 0.9/len(use_frames)
@@ -59,24 +61,13 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
 
     plt.xticks([r + barWidth for r in range(len(bars[0]))], tags)
-    plt.title('Pagefaults for tools on {0} {1}-formed pages'.format(frames[0].get_amount(), 'well' if processing_wellformed else 'ill'))
+    plt.title('Avg. max memory usage for tools {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
     plt.ylabel('amount')
 
     plt.legend(loc='upper right')
 
-    # x_positions = []
-    # for pos in bar_pos:
-    #     x_positions.extend(pos)
-
-    # y_positions = []
-    # for bar in bars:
-    #     y_positions.extend(bar)
-
-    # for x_pos, y_pos in zip(x_positions, y_positions):
-    #     plt.text(x=x_pos*0.95, y=y_pos*1.05, s=y_pos, size=fontsize)
-
+    
     # plt.yscale('log')
-
     fig.tight_layout()
 
     if show_output:
@@ -85,7 +76,7 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     fs.mkdir(settings.godir, exist_ok=True)
 
 
-    fig.savefig(fs.join(settings.godir, 'pagefaults_large.pdf' if print_large else 'pagefaults.pdf'), format='pdf')
+    fig.savefig(fs.join(settings.godir, 'memplot_large.pdf' if print_large else 'memplot.pdf'), format='pdf')
 
     if print_large:
         plt.rcdefaults()

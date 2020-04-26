@@ -2,8 +2,11 @@
 from enum import Enum
 import os
 
-# The greater purpose of (functions in) this file is
-# to convert strings to colored strings
+'''
+The greater purpose of (functions in) this file is
+to convert strings to colored strings, which helps
+navigating the commandline interface
+'''
 
 '''An enum to specify what color you want your text to be'''
 class Color(Enum):
@@ -15,9 +18,11 @@ class Color(Enum):
     CAN = '\033[1;36m'
     CLR = '\033[0m'
 
+# Print given text with given color
 def printc(string, color, end='\n'):
     print(format(string, color), end=end)
 
+# Print given error text
 def printerr(string, color=Color.RED, end='\n'):
     print(format(string, color), end=end)
 

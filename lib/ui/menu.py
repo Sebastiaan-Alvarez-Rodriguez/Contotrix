@@ -3,7 +3,9 @@ from enum import Enum
 from lib.ui.color import printerr
 import lib.fs as fs
 
-# Purpose of (functions in) this file is to provide standard user-interaction functions
+'''
+This file provides functions to handle standard user-interaction
+'''
 
 # Simple method to ask user a yes/no question. Result returned as boolean.
 # Returns True if user responded positive, otherwise False
@@ -16,25 +18,6 @@ def standard_yesno(question):
             return False
         else:
             printerr('Invalid option "{0}"'.format(choice))
-
-
-def standard_pick_one(question, options):
-    copy = list(options)
-    copy.sort(key=len)
-    minimals = [[x[0], x] for x in copy]
-    for x in minimals:
-        while minimals.count(x[0]) > 1:
-            if len(x[0]) == len(x[1]):
-                raise RuntimeError('Options "{0}" occurs multiple times!'.format(x[1]))
-            else:
-                x[0] += x[1][len(x[0])] #add next char of option
-
-    while True:
-        choice = input(question).lower()
-        if choice in options:
-            return choice
-        elif choice in [x[0] for x in minimals]:
-            return minimals[([x[0] for x in minimals].index(choice))][1]
 
 
 # ask user for a directory
@@ -87,46 +70,3 @@ def ask_path(question, must_exist=False, exist_ok=True, ask_override=True, direc
             else:
                 return choice
         print('')
-
-
-# Maps numbers (starting from 0 of course) to components for user select
-def make_optionsdict(objects):
-    returndict={}
-    for number, obj in enumerate(objects):
-        returndict[number] = obj
-    return returndict
-
-
-# Enum to represent menu choice made
-class MenuResults(Enum):
-    CHOSEN=0
-    EVERYTHING=1
-    BACK=2
-
-
-# Give a list of choices and handles input
-# Returns selected options and type of return: Chosen, Back, Everything
-# Back type is returned when user selects 'Back' option.
-# Everything is returned when user selects 'Everything' option.
-# Chosen is returned when user selects one or more items
-def standard_menu(choice_list, display_lambda):
-    optionsdict = make_optionsdict(choice_list)
-    while True:
-        for item in optionsdict:
-            print('\t\t[{0}] - {1}'.format(str(item),display_lambda(optionsdict[item])))
-        print('\t[E]verything')
-        print('\t[B]ack')
-        choice = input('Please make a choice (or multiple, comma-separated): ').upper()
-        chosenarray = []
-        words = choice.split(',')
-        for word in words:
-            if word in ('B', 'BACK'):
-                return [], MenuResults.BACK
-            elif word in ('E', 'EVERYTHING'):
-                return choice_list, MenuResults.EVERYTHING
-            elif word.isdigit() and int(word) in optionsdict:
-                chosenarray.append(optionsdict[int(word)])
-            else:
-                print('Unknown option "{0}"'.format(word))
-        if len(chosenarray) > 0:
-            return chosenarray, MenuResults.CHOSEN

@@ -4,12 +4,21 @@ import random
 from lib.settings import settings
 from lib.ui.color import printerr
 
+
+'''
+Generate major errors in HTML code,
+such as removing head tags, closing html tags, 
+inserting unclosed tags, inserting unopened close tags
+'''
+
+# Gets HTML files
 def generate_html_files(location):
     with os.scandir(location) as it:
         for entry in it:
             if entry.is_file() and entry.name.endswith('.html'):
                 yield entry
 
+# Main function
 def gen(tail):
     fs.mkdir(settings.mdir, exist_ok=True)
     try:

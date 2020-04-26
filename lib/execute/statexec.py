@@ -1,8 +1,24 @@
 #!/usr/bin/env python
-    # Credits to Realz Slaw for suggesting this way of measuring os parameters: 
-    # https://stackoverflow.com/users/586784/realz-slaw
-    # Question: 
-    # https://stackoverflow.com/questions/13607391/
+
+    '''
+    File responsible to act as drone, in case called program segfaults.
+    This file gets executed from the main framework.
+    In the stdin to this process is the contents of the HTML file.
+    This process should pipe it to any children it calls.
+    In the system arguments is the command to execute,
+    the html content size residing in stdin (useful for C programs),
+    amount of times to repeat parsing,
+    a location to use as working directory, 
+    a timeout, 
+    and a boolean indicating whether we must surpress stderr
+
+    Credits to Realz Slaw for suggesting using resource to measure os parameters: 
+    https://stackoverflow.com/users/586784/realz-slaw
+    Question: 
+    https://stackoverflow.com/questions/13607391/
+
+
+    '''
 
 import sys
 import os
@@ -10,12 +26,6 @@ import subprocess
 import resource
 
 def measure():
-    # print('Statexec: got {0} parameters'.format(len(sys.argv)), file=sys.stderr)
-    # print('execrule: {0}'.format(sys.argv[1]), file=sys.stderr)
-    # print('repeats: {0}'.format(sys.argv[3]), file=sys.stderr)
-
-
-
     cmd = sys.argv[1].split(' ') # execrule
     cmd.append(sys.argv[2])      # html size
     cmd.append(sys.argv[3])      # repeats
@@ -36,7 +46,6 @@ def measure():
 
     usages = resource.getrusage(resource.RUSAGE_CHILDREN)
 
-    # https://docs.python.org/3/library/resource.html
     fields = []
     fields.append(output)           # Number of links found
     fields.append(usages.ru_utime)  # User time (float)

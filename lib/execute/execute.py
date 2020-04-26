@@ -4,24 +4,32 @@ import time
 import os
 import sys
 
+'''
+Submodule to execute parsers in parallel and collect results
+'''
+
+
 from lib.ui.color import printc, Color, printerr
 from lib.ui.menu import standard_yesno
 import lib.fs as fs
 from lib.execute.logger import Logger
 from lib.util import has_module, convert_csv_to_pyarrow
 
-
+# Print parsing success
 def print_success(tool_name, html_name):
     print('Execution of ', end='')
     printc('{0} '.format(tool_name), Color.CAN, end='')
     print('on {0} '.format(html_name), end='')
     printc('complete!', Color.GRN)
 
+
+# Print parsing failure
 def print_failure(tool_name, html_name):
     print('Execution of ', end='')
     printc('{0} '.format(tool_name), Color.CAN, end='')
     print('on {0} '.format(html_name), end='')
     printc('failed!', Color.RED)
+
 
 # Function which handles the running of one parser call
 def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content_path, repeats, timeout, print_stderr, print_completions, logqueue):
@@ -68,7 +76,7 @@ def parallel_execute(tool_name, tool_cwd, tool_execrule, html_name, html_content
     ))
 
 
-# Ask how many cores to use for execution
+# Ask how many cores to use for execution, with optional limit
 def ask_cores(max_cores=None):
     if max_cores != None:
         show_max = min(max_cores, multiprocessing.cpu_count())
@@ -115,7 +123,8 @@ def ask_timeout():
         else:
             return f
 
-
+# Ask user to directly convert generated CSV to Apache Arrow.
+# Returns True if user wants this, False otherwise
 def ask_pyarrow():
     if has_module('pyarrow'):
         return standard_yesno('Convert csv to pyarrow format (.parquet) afterwards?\n(Note, you need to do this to use the generated data for the graphs submodule)\n')
@@ -124,13 +133,15 @@ def ask_pyarrow():
         return False
 
 
+# Generates all combinations of arguments, with which we should call
+# the parallel_execute() function above
 def argument_generator(data, repeats, tools, timeout, print_stderr, print_completions, logqueue):
     for item in [x for x in fs.ls(data) if x.endswith('.html')]:
         for tool in tools:
             yield (tool[0], tool[1], tool[2], item, fs.join(data, item), repeats, timeout, print_stderr, print_completions, logqueue,)
 
 
-# Data, repeats, [[name, location, execrule], ...], csvlocation
+# Main function, containing data
 def execute(data, repeats, tools, csvlocation):
     cores = ask_cores()
     csvheader='toolname,htmlname,htmlsize,totaltime,linksfound,usertime,systemtime,maxmem,softpage,hardpage,error,timeout\n'

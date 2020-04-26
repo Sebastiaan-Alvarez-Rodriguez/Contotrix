@@ -6,6 +6,11 @@ import lib.fs as fs
 from lib.settings import settings
 from lib.ui.color import printerr
 
+'''
+Generate time vs. memory footprint plot
+'''
+
+# Main function
 def gen(frames, processing_wellformed, print_large=False, show_output=False):
     use_frames = [x for x in frames if x.is_wellformed_set()==processing_wellformed and not x.is_unbound_set()]
     use_frames.sort()
@@ -28,8 +33,10 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
 
     for num, frame in enumerate(use_frames):
-        subgroup = frame.df.mean(frame.df.maxmem, binby=frame.df.totaltime, limits=[0,10],shape=1024, selection=frame.df.error==1 and frame.df.timeout==1)
-        plt.plot(linspace(0,10,1024),subgroup, '-', label=frame.get_nice_name())
+        frame.df.select(frame.df.error==1 and frame.df.timeout==1, mode='replace', name='timemem')
+        subgroup = frame.df.mean(frame.df.maxmem, binby=frame.df.totaltime, shape=256, selection='timemem')
+        times = frame.df.first(frame.df.totaltime, frame.df.totaltime, binby=frame.df.totaltime, shape=256, selection='timemem')
+        plt.plot(times, subgroup, '-', label=frame.get_nice_name())
     plt.title('Tool execution time vs max memory usage on {0}-formed webpages'.format('well' if processing_wellformed else 'ill'))
     plt.xlabel('Execution times (in seconds)')
     plt.ylabel('Max memory footprints (in bytes)')
@@ -40,6 +47,8 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
     # plt.xscale('log')
     plt.yscale('log')
+
+    fig.tight_layout()
 
     if show_output:
         plt.show()

@@ -7,7 +7,11 @@ from lib.settings import settings
 import lib.malformer.minor as minor
 import lib.malformer.major as major
 
+'''
+Submodule to create minor or major mistakes in HTML code
+'''
 
+# Help function for this submodule
 def help():
     print('''
 Commands:
@@ -33,6 +37,7 @@ Commands:
 ''')
 
 
+# Gets commands from commandline
 def get_command():
     try:
         printc('malformer> ', Color.PRP, end='')

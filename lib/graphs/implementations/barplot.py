@@ -5,6 +5,12 @@ import lib.fs as fs
 from lib.settings import settings
 from lib.ui.color import printerr
 
+
+'''
+Generate main barplot, containing parsed, timeout, error bars
+'''
+
+# Main function
 def gen(frames, processing_wellformed, print_large=False, show_output=False):
     use_frames = [x for x in frames if x.is_wellformed_set()==processing_wellformed and not x.is_unbound_set()]
     use_frames.sort()
@@ -13,11 +19,13 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
         printerr('There were no {0}-formed frames'.format('well' if processing_wellformed else 'ill'))
         return
 
+    fontsize = 8
     if print_large:
+        fontsize = 16
         font = {
             'family' : 'DejaVu Sans',
             'weight' : 'bold',
-            'size'   : 16
+            'size'   : fontsize
         }
         plt.rc('font', **font)
 
@@ -51,10 +59,10 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
 
     plt.xticks([r + barWidth for r in range(len(bars[0]))], tags)
-    plt.title('Analysis outcome for tools on {0} {1}-formed webpages'.format(frames[0].get_amount(), 'well' if processing_wellformed else 'ill'))
+    plt.title('Outcome for tools on {0} {1}-formed webpages'.format(frames[0].get_amount(), 'well' if processing_wellformed else 'ill'))
     plt.ylabel('amount')
 
-    plt.legend(loc='upper right')
+    plt.legend(loc='lower left')
 
     x_positions = []
     for pos in bar_pos:
@@ -64,8 +72,20 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
     for bar in bars:
         y_positions.extend(bar)
 
+    y_seen = []
     for x_pos, y_pos in zip(x_positions, y_positions):
-        plt.text(x = x_pos-0.05, y = y_pos+0.9, s = y_pos, size = 8)
+        seen = False
+        for val in y_seen:
+            if y_pos*0.94 <= val <= y_pos*1.06 or y_pos == 0:
+                seen = True
+                break
+        if seen:
+            continue
+        plt.text(x=x_pos-0.05, y=y_pos+0.9, s=y_pos, size=fontsize)
+        y_seen.append(y_pos)
+
+    plt.yscale('log')
+    fig.tight_layout()
 
     if show_output:
         plt.show()
@@ -77,3 +97,21 @@ def gen(frames, processing_wellformed, print_large=False, show_output=False):
 
     if print_large:
         plt.rcdefaults()
+
+    plt.close()
+
+    print(f'''
+\\begin{{table}}[tb]
+    \\centering
+    \\begin{{tabular}}{{|r|r|r|r|}}
+        \\hline
+        \\textbf{{Name}} & \\textbf{{Parsed}} & \\textbf{{timeout}} & \\textbf{{error}} \\\\ \\hline
+''')
+    for name, pos, bar in zip(names, bar_pos, bars):
+        print(f'''{name} & {bar[0]} & {bar[1]} & {bar[2]} \\\\ \\hline''')
+
+    print(f'''
+    \\end{{tabular}}
+    \\caption{{Outcome on {frames[0].get_amount()} {"well" if processing_wellformed else "ill"}-formed webpages}}
+    \\label{{tab:general_stats}}
+\\end{{table}}''')
